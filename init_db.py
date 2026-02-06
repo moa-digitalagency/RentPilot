@@ -1,6 +1,8 @@
 from flask import Flask
-from config.config import Config
-from models.models import db, User, Establishment, Room, Lease, UserRole, FinancialMode
+from config.settings import Config
+from config.extensions import db
+from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType
+from security.pwd_tools import hash_password
 from datetime import date
 
 def create_app():
@@ -27,7 +29,7 @@ def init_db():
         landlord = User(
             role=UserRole.BAILLEUR,
             email='landlord@demo.com',
-            password_hash='hashed_password_123',
+            password_hash=hash_password('password123'),
             avatar='default_avatar.png'
         )
         db.session.add(landlord)
@@ -38,7 +40,7 @@ def init_db():
         establishment = Establishment(
             landlord_id=landlord.id,
             address='123 Demo Street, Paris',
-            geo_approx='Paris 75001',
+            fuzzy_location='Paris 1er Arrondissement (approx)',
             config_financial_mode=FinancialMode.EGAL,
             wifi_cost=29.99,
             syndic_cost=50.0
@@ -46,6 +48,21 @@ def init_db():
         db.session.add(establishment)
         db.session.commit()
         print("Added Establishment.")
+
+        # Chat Rooms
+        general_chat = ChatRoom(
+            establishment_id=establishment.id,
+            type=ChannelType.GENERAL,
+            name="General"
+        )
+        coloc_chat = ChatRoom(
+            establishment_id=establishment.id,
+            type=ChannelType.COLOC_ONLY,
+            name="Entre Colocs"
+        )
+        db.session.add_all([general_chat, coloc_chat])
+        db.session.commit()
+        print("Added Chat Rooms.")
 
         # 3 Rooms
         room1 = Room(establishment_id=establishment.id, name='Chambre 1', base_price=500.0, is_vacant=False)
@@ -60,7 +77,7 @@ def init_db():
         tenant_resp = User(
             role=UserRole.TENANT_RESPONSABLE,
             email='tenant_resp@demo.com',
-            password_hash='hashed_password_123',
+            password_hash=hash_password('password123'),
             avatar='default_avatar.png'
         )
         db.session.add(tenant_resp)
@@ -79,13 +96,13 @@ def init_db():
         coloc1 = User(
             role=UserRole.COLOCATAIRE,
             email='coloc1@demo.com',
-            password_hash='hashed_password_123',
+            password_hash=hash_password('password123'),
             avatar='default_avatar.png'
         )
         coloc2 = User(
             role=UserRole.COLOCATAIRE,
             email='coloc2@demo.com',
-            password_hash='hashed_password_123',
+            password_hash=hash_password('password123'),
             avatar='default_avatar.png'
         )
         db.session.add_all([coloc1, coloc2])
