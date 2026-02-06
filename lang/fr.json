@@ -3,6 +3,8 @@
         "title": "RentPilot"
     },
     "nav": {
+        "home": "Accueil",
+        "about": "À propos",
         "dashboard": "Tableau de bord",
         "finances": "Finances",
         "chat": "Messagerie",
@@ -26,12 +28,94 @@
         "pricing": "Tarifs",
         "register": "S'inscrire",
         "hero_badge": "🚀 Nouvelle version disponible",
-        "hero_title": "La colocation <br> <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600\">sans friction.</span>",
-        "hero_subtitle": "Centralisez loyers, charges et communications. RentPilot automatise la gestion pour les bailleurs et simplifie la vie des colocataires.",
+        "hero_title": "Gérez votre colocation <span class=\"text-indigo-600\">sereinement</span>",
+        "hero_desc": "Fini les prises de tête pour les comptes. RentPilot centralise loyers, charges et communication pour une colocation harmonieuse.",
         "start_free": "Commencer gratuitement",
-        "demo": "Voir la démo"
+        "demo": "Voir la démo",
+        "cta_features": "Découvrir les fonctionnalités",
+        "cta_more": "En savoir plus",
+        "pain_title": "Les comptes entre colocs, c'est l'enfer.",
+        "pain_desc": "Qui a payé l'électricité ? Est-ce que tout le monde a versé sa part du loyer ? RentPilot apporte de la transparence et simplifie la gestion financière et administrative.",
+        "mission": "Notre mission",
+        "pain_example_1": "Tu me dois encore 20€ pour internet...",
+        "pain_example_2": "Loyer payé et reçu envoyé automatiquement !",
+        "features_title": "Tout ce qu'il faut pour gérer",
+        "features_desc": "Une suite d'outils complète pour propriétaires et colocataires, conçue pour simplifier votre quotidien.",
+        "feature_rent_title": "Gestion Loyer",
+        "feature_rent_desc": "Suivi des paiements en temps réel et rappels automatiques pour ne jamais oublier.",
+        "feature_chat_title": "Chat Intégré",
+        "feature_chat_desc": "Discutez entre colocs ou avec le proprio sans quitter l'application.",
+        "feature_receipts_title": "Reçus QR",
+        "feature_receipts_desc": "Générez et vérifiez des reçus de paiement infalsifiables via QR Code.",
+        "feature_maint_title": "Maintenance",
+        "feature_maint_desc": "Signalez des incidents et suivez leur résolution facilement.",
+        "testimonials_title": "Ils nous font confiance",
+        "testimonial_1_role": "Colocataire",
+        "testimonial_1_text": "Avant, on se disputait toujours pour les factures. Avec RentPilot, tout est clair et automatique.",
+        "testimonial_2_role": "Propriétaire",
+        "testimonial_2_text": "La génération des reçus par QR Code me fait gagner un temps fou. Je recommande !",
+        "testimonial_3_role": "Colocataire",
+        "testimonial_3_text": "L'interface est super fluide et moderne. On a enfin un outil qui ressemble à quelque chose.",
+        "contact_title": "Une question ?",
+        "contact_desc": "Nous sommes là pour vous aider à configurer votre espace.",
+        "contact_whatsapp": "Discuter sur WhatsApp",
+        "contact_us": "Nous Contacter"
+    },
+    "auth": {
+        "login_title": "Connexion à votre espace",
+        "register_title": "Créer un compte",
+        "email_placeholder": "votre@email.com",
+        "password_placeholder": "Votre mot de passe",
+        "forgot_password": "Mot de passe oublié ?",
+        "submit_login": "Se connecter",
+        "submit_register": "S'inscrire",
+        "error_credentials": "Email ou mot de passe incorrect.",
+        "error_generic": "Une erreur est survenue."
+    },
+    "dashboard": {
+        "welcome": "Bienvenue, {name}",
+        "balance": "Solde actuel",
+        "next_payment": "Prochain paiement",
+        "occupancy": "Taux d'occupation",
+        "pending_tasks": "Tâches en attente"
+    },
+    "finance": {
+        "receipts": "Reçus",
+        "payment_proof": "Preuve de paiement",
+        "validation": "Validation",
+        "amount": "Montant",
+        "date": "Date",
+        "status": "Statut",
+        "status_paid": "Payé",
+        "status_pending": "En attente",
+        "download_pdf": "Télécharger PDF"
+    },
+    "chat": {
+        "placeholder": "Écrivez votre message...",
+        "read_by": "Lu par",
+        "online": "En ligne",
+        "send": "Envoyer"
+    },
+    "admin": {
+        "settings": "Paramètres",
+        "plans": "Abonnements",
+        "stats": "Statistiques",
+        "export_stats": "Exporter Stats",
+        "config_receipts": "Config Reçus"
+    },
+    "verification": {
+        "page_title": "Vérification de Reçu",
+        "valid": "Certificat Authentique",
+        "invalid": "Ticket Invalide",
+        "issuer": "Émetteur",
+        "purpose": "Motif",
+        "amount": "Montant",
+        "status": "Statut"
     },
     "footer": {
-        "rights": "Tous droits réservés."
+        "rights": "Tous droits réservés.",
+        "legal": "Mentions Légales",
+        "privacy": "Confidentialité",
+        "contact": "Contact"
     }
 }

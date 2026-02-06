@@ -2,17 +2,16 @@ import os
 import json
 from flask import session, request, current_app
 
-class I18nService:
+class LanguageManager:
     def __init__(self, app=None):
         self._translations = {}
         self._default_lang = 'fr'
-        self._supported_langs = ['fr', 'en']
+        self._supported_langs = ['fr', 'en', 'es', 'pt']
         if app:
             self.init_app(app)
 
     def init_app(self, app):
         self._load_translations(app)
-
         # Register context processor
         app.context_processor(self.context_processor)
 
@@ -47,16 +46,21 @@ class I18nService:
                 self._translations[lang] = {}
 
     def get_locale(self):
-        # 1. Check session
+        # 1. Check URL parameter
+        if request and request.args.get('lang') in self._supported_langs:
+            return request.args.get('lang')
+
+        # 2. Check session
         if session.get('lang') in self._supported_langs:
             return session['lang']
 
-        # 2. Check header
-        best_match = request.accept_languages.best_match(self._supported_langs)
-        if best_match:
-            return best_match
+        # 3. Check header
+        if request:
+            best_match = request.accept_languages.best_match(self._supported_langs)
+            if best_match:
+                return best_match
 
-        # 3. Default
+        # 4. Default
         return self._default_lang
 
     def get_text(self, key, **kwargs):
@@ -94,7 +98,18 @@ class I18nService:
 
         return data
 
-    def context_processor(self):
-        return dict(_=self.get_text, get_locale=self.get_locale)
+    def get_translations(self, lang):
+        """Returns the full translation dictionary for a specific language."""
+        if lang in self._supported_langs:
+            return self._translations.get(lang, {})
+        return self._translations.get(self._default_lang, {})
 
-i18n = I18nService()
+    def context_processor(self):
+        return dict(
+            _=self.get_text,
+            get_locale=self.get_locale,
+            supported_languages=self._supported_langs
+        )
+
+# Create singleton instance
+i18n = LanguageManager()

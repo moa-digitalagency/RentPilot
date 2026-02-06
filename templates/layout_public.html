@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,24 +69,24 @@
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Accueil</a>
-                    <a href="{{ url_for('main.about') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">À propos</a>
+                    <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">{{ _('nav.home') }}</a>
+                    <a href="{{ url_for('main.about') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">{{ _('nav.about') }}</a>
                     <!-- Verification is usually via QR code, but maybe a direct link if needed, usually hidden from nav unless specifically asked. User didn't ask for it in Nav, but public_verification page exists. -->
 
                     {% if current_user.is_authenticated %}
                         <a href="{{ url_for('dashboard.dashboard') }}" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-                            Mon Tableau de Bord
+                            {{ _('nav.dashboard') }}
                         </a>
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-                            Connexion
+                            {{ _('user.login') }}
                         </a>
                     {% endif %}
                 </div>
 
                 <!-- Mobile menu button (Simplified) -->
                 <div class="md:hidden flex items-center">
-                    <a href="{{ url_for('auth.login') }}" class="text-indigo-600 font-medium">Connexion</a>
+                    <a href="{{ url_for('auth.login') }}" class="text-indigo-600 font-medium">{{ _('user.login') }}</a>
                 </div>
             </div>
         </div>
@@ -102,16 +102,28 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <p class="text-gray-500 text-sm">&copy; {{ now.year if now else '2024' }} RentPilot. Tous droits réservés.</p>
+                    <p class="text-gray-500 text-sm">&copy; {{ now.year if now else '2024' }} RentPilot. {{ _('footer.rights') }}</p>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-gray-500">Mentions Légales</a>
-                    <a href="#" class="text-gray-400 hover:text-gray-500">Confidentialité</a>
-                    <a href="#" class="text-gray-400 hover:text-gray-500">Contact</a>
+                <div class="flex space-x-6 items-center">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">{{ _('footer.legal') }}</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">{{ _('footer.privacy') }}</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">{{ _('footer.contact') }}</a>
+
+                    <!-- Language Switcher in Footer -->
+                    <div class="flex items-center space-x-2 border-l border-gray-300 pl-4 ml-2">
+                        {% for lang_code in supported_languages %}
+                            <a href="{{ url_for('main.set_lang', lang=lang_code) }}"
+                               class="text-xs font-semibold px-2 py-1 rounded transition-colors {{ 'text-indigo-600 bg-white/50' if get_locale() == lang_code else 'text-gray-400 hover:text-gray-600' }}">
+                                {{ lang_code|upper }}
+                            </a>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
+    <!-- Client-side Translations -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
 </body>
 </html>

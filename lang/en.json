@@ -3,6 +3,8 @@
         "title": "RentPilot"
     },
     "nav": {
+        "home": "Home",
+        "about": "About",
         "dashboard": "Dashboard",
         "finances": "Finances",
         "chat": "Chat",
@@ -26,12 +28,94 @@
         "pricing": "Pricing",
         "register": "Sign Up",
         "hero_badge": "🚀 New version available",
-        "hero_title": "Coliving <br> <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600\">without friction.</span>",
-        "hero_subtitle": "Centralize rents, utilities, and communications. RentPilot automates management for landlords and simplifies life for tenants.",
+        "hero_title": "Coliving <span class=\"text-indigo-600\">without friction</span>",
+        "hero_desc": "No more headaches over accounts. RentPilot centralizes rents, utilities, and communication for harmonious coliving.",
         "start_free": "Start for free",
-        "demo": "View Demo"
+        "demo": "View Demo",
+        "cta_features": "Discover Features",
+        "cta_more": "Learn More",
+        "pain_title": "Accounts between flatmates are hell.",
+        "pain_desc": "Who paid the electricity? Did everyone pay their share of the rent? RentPilot brings transparency and simplifies financial and administrative management.",
+        "mission": "Our Mission",
+        "pain_example_1": "You still owe me 20€ for internet...",
+        "pain_example_2": "Rent paid and receipt sent automatically!",
+        "features_title": "Everything you need to manage",
+        "features_desc": "A complete suite of tools for landlords and tenants, designed to simplify your daily life.",
+        "feature_rent_title": "Rent Management",
+        "feature_rent_desc": "Real-time payment tracking and automatic reminders so you never forget.",
+        "feature_chat_title": "Integrated Chat",
+        "feature_chat_desc": "Chat with flatmates or the landlord without leaving the app.",
+        "feature_receipts_title": "QR Receipts",
+        "feature_receipts_desc": "Generate and verify tamper-proof payment receipts via QR Code.",
+        "feature_maint_title": "Maintenance",
+        "feature_maint_desc": "Report incidents and track their resolution easily.",
+        "testimonials_title": "They trust us",
+        "testimonial_1_role": "Tenant",
+        "testimonial_1_text": "We used to fight over bills all the time. With RentPilot, everything is clear and automatic.",
+        "testimonial_2_role": "Landlord",
+        "testimonial_2_text": "Generating receipts via QR Code saves me so much time. I recommend it!",
+        "testimonial_3_role": "Tenant",
+        "testimonial_3_text": "The interface is super smooth and modern. We finally have a tool that looks good.",
+        "contact_title": "Any questions?",
+        "contact_desc": "We are here to help you set up your space.",
+        "contact_whatsapp": "Chat on WhatsApp",
+        "contact_us": "Contact Us"
+    },
+    "auth": {
+        "login_title": "Login to your space",
+        "register_title": "Create an account",
+        "email_placeholder": "your@email.com",
+        "password_placeholder": "Your password",
+        "forgot_password": "Forgot password?",
+        "submit_login": "Log In",
+        "submit_register": "Sign Up",
+        "error_credentials": "Incorrect email or password.",
+        "error_generic": "An error occurred."
+    },
+    "dashboard": {
+        "welcome": "Welcome, {name}",
+        "balance": "Current Balance",
+        "next_payment": "Next Payment",
+        "occupancy": "Occupancy Rate",
+        "pending_tasks": "Pending Tasks"
+    },
+    "finance": {
+        "receipts": "Receipts",
+        "payment_proof": "Payment Proof",
+        "validation": "Validation",
+        "amount": "Amount",
+        "date": "Date",
+        "status": "Status",
+        "status_paid": "Paid",
+        "status_pending": "Pending",
+        "download_pdf": "Download PDF"
+    },
+    "chat": {
+        "placeholder": "Type your message...",
+        "read_by": "Read by",
+        "online": "Online",
+        "send": "Send"
+    },
+    "admin": {
+        "settings": "Settings",
+        "plans": "Plans",
+        "stats": "Statistics",
+        "export_stats": "Export Stats",
+        "config_receipts": "Receipt Config"
+    },
+    "verification": {
+        "page_title": "Receipt Verification",
+        "valid": "Authentic Certificate",
+        "invalid": "Invalid Ticket",
+        "issuer": "Issuer",
+        "purpose": "Purpose",
+        "amount": "Amount",
+        "status": "Status"
     },
     "footer": {
-        "rights": "All rights reserved."
+        "rights": "All rights reserved.",
+        "legal": "Legal Notice",
+        "privacy": "Privacy",
+        "contact": "Contact"
     }
 }

@@ -8,17 +8,17 @@
     <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 z-0"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-            Gérez votre colocation <span class="text-indigo-600">sereinement</span>
+            {{ _('landing.hero_title')|safe }}
         </h1>
         <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Fini les prises de tête pour les comptes. RentPilot centralise loyers, charges et communication pour une colocation harmonieuse.
+            {{ _('landing.hero_desc') }}
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
             <a href="#features" class="px-8 py-3 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                Découvrir les fonctionnalités
+                {{ _('landing.cta_features') }}
             </a>
             <a href="{{ url_for('main.about') }}" class="px-8 py-3 rounded-full bg-white text-indigo-600 font-semibold border border-indigo-200 hover:bg-indigo-50 transition-all shadow-md hover:shadow-lg">
-                En savoir plus
+                {{ _('landing.cta_more') }}
             </a>
         </div>
     </div>
@@ -29,13 +29,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid md:grid-cols-2 gap-12 items-center">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Les comptes entre colocs, c'est l'enfer.</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">{{ _('landing.pain_title') }}</h2>
                 <p class="text-lg text-gray-600 mb-6">
-                    Qui a payé l'électricité ? Est-ce que tout le monde a versé sa part du loyer ?
-                    RentPilot apporte de la transparence et simplifie la gestion financière et administrative.
+                    {{ _('landing.pain_desc') }}
                 </p>
                 <a href="{{ url_for('main.about') }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
-                    Notre mission
+                    {{ _('landing.mission') }}
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </a>
             </div>
@@ -45,11 +44,11 @@
                     <div class="space-y-4">
                         <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg text-red-700 border border-red-100">
                             <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="font-medium">"Tu me dois encore 20€ pour internet..."</span>
+                            <span class="font-medium">"{{ _('landing.pain_example_1') }}"</span>
                         </div>
                         <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg text-green-700 border border-green-100">
                             <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="font-medium">"Loyer payé et reçu envoyé automatiquement !"</span>
+                            <span class="font-medium">"{{ _('landing.pain_example_2') }}"</span>
                         </div>
                     </div>
                 </div>
@@ -62,8 +61,8 @@
 <section id="features" class="py-20 bg-gray-50/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-gray-900">Tout ce qu'il faut pour gérer</h2>
-            <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Une suite d'outils complète pour propriétaires et colocataires, conçue pour simplifier votre quotidien.</p>
+            <h2 class="text-3xl font-bold text-gray-900">{{ _('landing.features_title') }}</h2>
+            <p class="mt-4 text-gray-600 max-w-2xl mx-auto">{{ _('landing.features_desc') }}</p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -72,8 +71,8 @@
                 <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Gestion Loyer</h3>
-                <p class="text-gray-600 text-sm">Suivi des paiements en temps réel et rappels automatiques pour ne jamais oublier.</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('landing.feature_rent_title') }}</h3>
+                <p class="text-gray-600 text-sm">{{ _('landing.feature_rent_desc') }}</p>
             </div>
 
             <!-- Feature 2 -->
@@ -81,8 +80,8 @@
                 <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Chat Intégré</h3>
-                <p class="text-gray-600 text-sm">Discutez entre colocs ou avec le proprio sans quitter l'application.</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('landing.feature_chat_title') }}</h3>
+                <p class="text-gray-600 text-sm">{{ _('landing.feature_chat_desc') }}</p>
             </div>
 
             <!-- Feature 3 -->
@@ -90,8 +89,8 @@
                 <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4h2v-4zM6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Reçus QR</h3>
-                <p class="text-gray-600 text-sm">Générez et vérifiez des reçus de paiement infalsifiables via QR Code.</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('landing.feature_receipts_title') }}</h3>
+                <p class="text-gray-600 text-sm">{{ _('landing.feature_receipts_desc') }}</p>
             </div>
 
             <!-- Feature 4 -->
@@ -99,8 +98,8 @@
                 <div class="w-12 h-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Maintenance</h3>
-                <p class="text-gray-600 text-sm">Signalez des incidents et suivez leur résolution facilement.</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('landing.feature_maint_title') }}</h3>
+                <p class="text-gray-600 text-sm">{{ _('landing.feature_maint_desc') }}</p>
             </div>
         </div>
     </div>
@@ -109,7 +108,7 @@
 <!-- Testimonials -->
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Ils nous font confiance</h2>
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">{{ _('landing.testimonials_title') }}</h2>
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Card 1 -->
             <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-lg transition-all">
@@ -119,10 +118,10 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-900">Sophie M.</h4>
-                        <span class="text-sm text-gray-500">Colocataire</span>
+                        <span class="text-sm text-gray-500">{{ _('landing.testimonial_1_role') }}</span>
                     </div>
                 </div>
-                <p class="text-gray-600 italic">"Avant, on se disputait toujours pour les factures. Avec RentPilot, tout est clair et automatique."</p>
+                <p class="text-gray-600 italic">"{{ _('landing.testimonial_1_text') }}"</p>
             </div>
 
              <!-- Card 2 -->
@@ -133,10 +132,10 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-900">Thomas L.</h4>
-                        <span class="text-sm text-gray-500">Propriétaire</span>
+                        <span class="text-sm text-gray-500">{{ _('landing.testimonial_2_role') }}</span>
                     </div>
                 </div>
-                <p class="text-gray-600 italic">"La génération des reçus par QR Code me fait gagner un temps fou. Je recommande !"</p>
+                <p class="text-gray-600 italic">"{{ _('landing.testimonial_2_text') }}"</p>
             </div>
 
              <!-- Card 3 -->
@@ -147,10 +146,10 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-900">Julie R.</h4>
-                        <span class="text-sm text-gray-500">Colocataire</span>
+                        <span class="text-sm text-gray-500">{{ _('landing.testimonial_3_role') }}</span>
                     </div>
                 </div>
-                <p class="text-gray-600 italic">"L'interface est super fluide et moderne. On a enfin un outil qui ressemble à quelque chose."</p>
+                <p class="text-gray-600 italic">"{{ _('landing.testimonial_3_text') }}"</p>
             </div>
         </div>
     </div>
@@ -159,17 +158,17 @@
 <!-- Contact Section -->
 <section class="py-24 bg-gradient-to-br from-indigo-900 to-purple-900 text-white">
     <div class="max-w-4xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-6">Une question ?</h2>
-        <p class="text-indigo-200 text-lg mb-8">Nous sommes là pour vous aider à configurer votre espace.</p>
+        <h2 class="text-3xl font-bold mb-6">{{ _('landing.contact_title') }}</h2>
+        <p class="text-indigo-200 text-lg mb-8">{{ _('landing.contact_desc') }}</p>
 
         {% if site_settings.whatsapp_contact_number %}
         <a href="https://wa.me/{{ site_settings.whatsapp_contact_number }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-8 py-3 rounded-full bg-[#25D366] text-white font-bold hover:bg-[#128C7E] transition-colors shadow-lg transform hover:-translate-y-1">
             <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            Discuter sur WhatsApp
+            {{ _('landing.contact_whatsapp') }}
         </a>
         {% else %}
          <a href="#" class="inline-flex items-center px-8 py-3 rounded-full bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-colors shadow-lg">
-            Nous Contacter
+            {{ _('landing.contact_us') }}
         </a>
         {% endif %}
     </div>

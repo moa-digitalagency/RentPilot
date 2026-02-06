@@ -1,0 +1,121 @@
+{
+    "app": {
+        "title": "RentPilot"
+    },
+    "nav": {
+        "home": "Inicio",
+        "about": "Acerca de",
+        "dashboard": "Tablero",
+        "finances": "Finanzas",
+        "chat": "Chat",
+        "works": "Mantenimiento",
+        "marketplace": "Marketplace"
+    },
+    "user": {
+        "guest": "Invitado",
+        "visitor": "Visitante",
+        "login": "Iniciar Sesión",
+        "logout": "Cerrar Sesión"
+    },
+    "role": {
+        "ADMIN": "Admin",
+        "BAILLEUR": "Propietario",
+        "TENANT_RESPONSABLE": "Responsable",
+        "COLOCATAIRE": "Inquilino"
+    },
+    "landing": {
+        "features": "Características",
+        "pricing": "Precios",
+        "register": "Registrarse",
+        "hero_badge": "🚀 Nueva versión disponible",
+        "hero_title": "Coliving <span class=\"text-indigo-600\">sin fricción</span>",
+        "hero_desc": "No más dolores de cabeza con las cuentas. RentPilot centraliza alquileres, servicios y comunicación para una convivencia armoniosa.",
+        "start_free": "Empezar gratis",
+        "demo": "Ver Demo",
+        "cta_features": "Descubrir Funcionalidades",
+        "cta_more": "Saber más",
+        "pain_title": "Las cuentas entre compañeros son un infierno.",
+        "pain_desc": "¿Quién pagó la electricidad? ¿Todos pagaron su parte del alquiler? RentPilot aporta transparencia y simplifica la gestión financiera y administrativa.",
+        "mission": "Nuestra Misión",
+        "pain_example_1": "Todavía me debes 20€ del internet...",
+        "pain_example_2": "¡Alquiler pagado y recibo enviado automáticamente!",
+        "features_title": "Todo lo que necesitas para gestionar",
+        "features_desc": "Una suite completa de herramientas para propietarios e inquilinos, diseñada para simplificar tu día a día.",
+        "feature_rent_title": "Gestión de Alquiler",
+        "feature_rent_desc": "Seguimiento de pagos en tiempo real y recordatorios automáticos para no olvidar nunca.",
+        "feature_chat_title": "Chat Integrado",
+        "feature_chat_desc": "Chatea con compañeros o con el propietario sin salir de la aplicación.",
+        "feature_receipts_title": "Recibos QR",
+        "feature_receipts_desc": "Genera y verifica recibos de pago infalsificables mediante Código QR.",
+        "feature_maint_title": "Mantenimiento",
+        "feature_maint_desc": "Reporta incidentes y sigue su resolución fácilmente.",
+        "testimonials_title": "Confían en nosotros",
+        "testimonial_1_role": "Inquilino",
+        "testimonial_1_text": "Antes siempre discutíamos por las facturas. Con RentPilot, todo es claro y automático.",
+        "testimonial_2_role": "Propietario",
+        "testimonial_2_text": "Generar recibos por código QR me ahorra muchísimo tiempo. ¡Lo recomiendo!",
+        "testimonial_3_role": "Inquilino",
+        "testimonial_3_text": "La interfaz es súper fluida y moderna. Por fin tenemos una herramienta que se ve bien.",
+        "contact_title": "¿Alguna pregunta?",
+        "contact_desc": "Estamos aquí para ayudarte a configurar tu espacio.",
+        "contact_whatsapp": "Hablar en WhatsApp",
+        "contact_us": "Contáctanos"
+    },
+    "auth": {
+        "login_title": "Iniciar sesión en tu espacio",
+        "register_title": "Crear una cuenta",
+        "email_placeholder": "tu@email.com",
+        "password_placeholder": "Tu contraseña",
+        "forgot_password": "¿Olvidaste tu contraseña?",
+        "submit_login": "Entrar",
+        "submit_register": "Registrarse",
+        "error_credentials": "Email o contraseña incorrectos.",
+        "error_generic": "Ocurrió un error."
+    },
+    "dashboard": {
+        "welcome": "Bienvenido, {name}",
+        "balance": "Saldo Actual",
+        "next_payment": "Próximo Pago",
+        "occupancy": "Tasa de Ocupación",
+        "pending_tasks": "Tareas Pendientes"
+    },
+    "finance": {
+        "receipts": "Recibos",
+        "payment_proof": "Comprobante de Pago",
+        "validation": "Validación",
+        "amount": "Monto",
+        "date": "Fecha",
+        "status": "Estado",
+        "status_paid": "Pagado",
+        "status_pending": "Pendiente",
+        "download_pdf": "Descargar PDF"
+    },
+    "chat": {
+        "placeholder": "Escribe tu mensaje...",
+        "read_by": "Leído por",
+        "online": "En línea",
+        "send": "Enviar"
+    },
+    "admin": {
+        "settings": "Configuración",
+        "plans": "Planes",
+        "stats": "Estadísticas",
+        "export_stats": "Exportar Stats",
+        "config_receipts": "Configurar Recibos"
+    },
+    "verification": {
+        "page_title": "Verificación de Recibo",
+        "valid": "Certificado Auténtico",
+        "invalid": "Ticket Inválido",
+        "issuer": "Emisor",
+        "purpose": "Motivo",
+        "amount": "Monto",
+        "status": "Estado"
+    },
+    "footer": {
+        "rights": "Todos los derechos reservados.",
+        "legal": "Aviso Legal",
+        "privacy": "Privacidad",
+        "contact": "Contacto"
+    }
+}
