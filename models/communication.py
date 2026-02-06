@@ -36,6 +36,9 @@ class Message(db.Model):
 
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    # JSON list of dicts: [{"user_id": 1, "read_at": "ISO_TIMESTAMP"}]
+    read_by_users = db.Column(db.JSON, default=list)
+
 class AnnouncementSenderType(enum.Enum):
     SUPER_ADMIN = 'SuperAdmin'
     LANDLORD = 'Landlord'

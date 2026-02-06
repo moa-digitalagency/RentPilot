@@ -1,6 +1,12 @@
 from config.extensions import db
 from sqlalchemy.sql import func
+from sqlalchemy import Enum as SQLAlchemyEnum
 from datetime import datetime
+import enum
+
+class ReceiptFormat(enum.Enum):
+    A4_Standard = 'A4_Standard'
+    Thermal_80mm = 'Thermal_80mm'
 
 class PlatformSettings(db.Model):
     """
@@ -20,6 +26,11 @@ class PlatformSettings(db.Model):
     seo_meta_desc = db.Column(db.String(255), default="SaaS de gestion locative moderne.")
 
     is_maintenance_mode = db.Column(db.Boolean, default=False)
+
+    # New V3 fields
+    whatsapp_contact_number = db.Column(db.String(20), nullable=True)
+    receipt_format = db.Column(SQLAlchemyEnum(ReceiptFormat), default=ReceiptFormat.A4_Standard, nullable=False)
+    receipt_custom_css = db.Column(db.Text, nullable=True)
 
     def save(self):
         if not self.id:
