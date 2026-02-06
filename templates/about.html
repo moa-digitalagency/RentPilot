@@ -1,102 +1,79 @@
 {% extends "layout_public.html" %}
 
-{% block title %}À propos de RentPilot{% endblock %}
+{% block title %}À propos - RentPilot{% endblock %}
 
 {% block content %}
-
-<!-- Hero About -->
-<section class="bg-indigo-600 text-white py-20 relative overflow-hidden">
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InB1cnBsZSIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3N2Zz4=')] opacity-10"></div>
-    <div class="container mx-auto px-4 relative z-10 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6">Notre Mission</h1>
-        <p class="text-xl md:text-2xl text-indigo-100 max-w-3xl mx-auto">
-            Rendre la gestion locative simple, transparente et sereine pour les propriétaires et les locataires.
-        </p>
-    </div>
-</section>
-
-<!-- The Problem -->
 <section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row items-center gap-16">
-             <div class="w-full md:w-1/2">
-                <div class="bg-rose-50 rounded-3xl p-10 relative">
-                    <h3 class="text-2xl font-bold text-rose-800 mb-4">Le constat</h3>
-                    <ul class="space-y-4 text-rose-700">
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Des fichiers Excel incompréhensibles.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Des quittances de loyer jamais envoyées à temps.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Des tensions inutiles entre colocataires pour savoir "qui doit combien".</span>
-                        </li>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Notre Histoire</h1>
+            <p class="text-xl text-gray-600">De la galère des comptes Excel à la sérénité de RentPilot.</p>
+        </div>
+
+        <!-- The Problem -->
+        <div class="mb-20">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/2">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Le Problème</h2>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Tout a commencé dans une colocation de 4 personnes à Paris. Entre les avances de frais pour les courses, le loyer qu'il fallait virer à un seul compte, et les factures d'électricité qui traînaient sur le comptoir de la cuisine, l'ambiance devenait vite électrique.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed">
+                        "Qui a payé internet ce mois-ci ?"<br>
+                        "Je t'ai fait le virement il y a deux semaines, tu n'as pas vérifié ?"<br>
+                        La gestion administrative d'une colocation est souvent source de conflits inutiles.
+                    </p>
+                </div>
+                <div class="md:w-1/2 bg-red-50 p-8 rounded-2xl border border-red-100 transform rotate-2">
+                    <h3 class="font-bold text-red-800 mb-2">Avant RentPilot...</h3>
+                    <ul class="space-y-2 text-red-700">
+                        <li class="flex items-center"><span class="mr-2">❌</span> Tableaux Excel illisibles</li>
+                        <li class="flex items-center"><span class="mr-2">❌</span> Reçus perdus ou oubliés</li>
+                        <li class="flex items-center"><span class="mr-2">❌</span> Tensions entre colocataires</li>
+                        <li class="flex items-center"><span class="mr-2">❌</span> Propriétaires sans visibilité</li>
                     </ul>
                 </div>
             </div>
-            <div class="w-full md:w-1/2">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Pourquoi c'est compliqué ?</h2>
-                <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                    La gestion locative traditionnelle, surtout en colocation, est source de frictions. Entre les loyers individuels, les charges communes, les régularisations et l'entretien courant, il est facile de s'y perdre.
-                </p>
-                <p class="text-lg text-gray-600 leading-relaxed">
-                    Souvent, les outils utilisés (WhatsApp + Excel + Virements bancaires) sont déconnectés les uns des autres, créant une charge mentale importante pour tout le monde.
-                </p>
-            </div>
         </div>
-    </div>
-</section>
 
-<!-- The Solution -->
-<section class="py-20 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row-reverse items-center gap-16">
-             <div class="w-full md:w-1/2">
-                <div class="bg-indigo-50 rounded-3xl p-10 relative">
-                    <h3 class="text-2xl font-bold text-indigo-800 mb-4">La réponse RentPilot</h3>
-                    <ul class="space-y-4 text-indigo-700">
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Un tableau de bord unique pour tous.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Automatisation des calculs et des documents.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Transparence totale grâce à la technologie QR.</span>
-                        </li>
+        <!-- The Solution -->
+        <div class="mb-20">
+            <div class="flex flex-col md:flex-row-reverse items-center gap-8">
+                <div class="md:w-1/2">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">La Solution</h2>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Nous avons créé RentPilot pour centraliser toute cette complexité. Une plateforme unique où propriétaires et locataires peuvent interagir en toute transparence.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed">
+                        Des quittances automatiques aux tickets de maintenance, en passant par un chat intégré pour centraliser les échanges : tout est pensé pour apaiser les relations et gagner du temps.
+                    </p>
+                </div>
+                <div class="md:w-1/2 bg-indigo-50 p-8 rounded-2xl border border-indigo-100 transform -rotate-1">
+                    <h3 class="font-bold text-indigo-800 mb-2">Avec RentPilot...</h3>
+                    <ul class="space-y-2 text-indigo-700">
+                        <li class="flex items-center"><span class="mr-2">✅</span> Suivi des paiements en temps réel</li>
+                        <li class="flex items-center"><span class="mr-2">✅</span> Reçus QR Code infalsifiables</li>
+                        <li class="flex items-center"><span class="mr-2">✅</span> Communication centralisée</li>
+                        <li class="flex items-center"><span class="mr-2">✅</span> Harmonie retrouvée</li>
                     </ul>
                 </div>
             </div>
-            <div class="w-full md:w-1/2">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Une plateforme tout-en-un</h2>
-                <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                    Nous avons construit RentPilot pour centraliser toutes les interactions liées au logement.
-                </p>
-                <p class="text-lg text-gray-600 leading-relaxed">
-                    Pour le <strong>propriétaire</strong>, c'est l'assurance d'un suivi financier rigoureux et d'une communication fluide.
-                    <br>
-                    Pour le <strong>locataire</strong>, c'est la simplicité d'avoir toutes ses infos, ses quittances et ses demandes au même endroit.
-                </p>
-            </div>
         </div>
+
+        <!-- The Vision -->
+        <div class="text-center bg-gray-50 p-12 rounded-3xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Notre Vision</h2>
+            <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8">
+                Nous croyons que la technologie doit servir à simplifier les relations humaines, pas à les complexifier.
+                RentPilot n'est pas juste un outil de gestion, c'est le tiers de confiance qui permet à chacun de se sentir chez soi, l'esprit léger.
+            </p>
+            <a href="{{ url_for('auth.register') }}" class="px-8 py-3 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors shadow-lg">
+                Rejoindre l'aventure
+            </a>
+        </div>
+
     </div>
 </section>
-
-<!-- Vision -->
-<section class="py-20 bg-white text-center">
-    <div class="container mx-auto px-4 max-w-4xl">
-        <h2 class="text-3xl font-bold text-gray-900 mb-8">Notre Vision</h2>
-        <p class="text-xl text-gray-600 leading-relaxed">
-            Nous croyons que la technologie doit servir à apaiser les relations humaines. En supprimant les ambiguïtés financières et administratives, nous permettons aux propriétaires et aux locataires de se concentrer sur l'essentiel : <strong>bien vivre ensemble.</strong>
-        </p>
-    </div>
-</section>
-
 {% endblock %}
