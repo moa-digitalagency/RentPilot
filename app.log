@@ -1,0 +1,29 @@
+ * Serving Flask app 'init_db'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 410-907-091
+127.0.0.1 - - [06/Feb/2026 19:22:35] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:35] "GET /statics/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:37] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:37] "GET /statics/js/sidebar.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:37] "[36mGET /statics/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:37] "GET /statics/js/charts.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:38] "[32mPOST /login HTTP/1.1[0m" 302 -
+127.0.0.1 - - [06/Feb/2026 19:22:38] "GET /dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:38] "[36mGET /statics/js/charts.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:38] "[36mGET /statics/js/sidebar.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:38] "[36mGET /statics/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "GET /finance HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/js/sidebar.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/js/charts.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "GET /chat HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/css/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/js/sidebar.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Feb/2026 19:22:39] "[36mGET /statics/js/charts.js HTTP/1.1[0m" 304 -

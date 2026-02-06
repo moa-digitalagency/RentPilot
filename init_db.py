@@ -2,13 +2,34 @@ from flask import Flask
 from config.settings import Config
 from config.extensions import db
 from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType
+from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp, ticket_bp, main_bp
 from security.pwd_tools import hash_password
 from datetime import date
+from flask_login import LoginManager
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='statics')
     app.config.from_object(Config)
     db.init_app(app)
+
+    # Init LoginManager
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    # Register Blueprints
+    app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(establishment_bp)
+    app.register_blueprint(finance_bp)
+    app.register_blueprint(chat_bp)
+    app.register_blueprint(ticket_bp)
+
     return app
 
 def init_db():

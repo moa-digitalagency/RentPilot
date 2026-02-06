@@ -12,6 +12,13 @@ import io
 
 finance_bp = Blueprint('finance', __name__)
 
+@finance_bp.route('/finance')
+@login_required
+def dashboard():
+    # Placeholder for Finance Dashboard
+    # In future: List transactions, invoices, charts specific to finance.
+    return render_template('finance.html')
+
 @finance_bp.route('/finance/add-expense', methods=['GET', 'POST'])
 @login_required
 def add_expense():
