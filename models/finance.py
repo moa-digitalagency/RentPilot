@@ -10,6 +10,7 @@ class ExpenseType(enum.Enum):
     WIFI = 'Wifi'
     TRAVAUX = 'Travaux'
     LOYER = 'Loyer'
+    SAAS = 'SaaS'
 
 class ValidationStatus(enum.Enum):
     PENDING = 'Pending'
@@ -85,6 +86,7 @@ class SaaSInvoice(db.Model):
     amount = db.Column(db.Float, nullable=False)
     status = db.Column(SQLAlchemyEnum(SaaSInvoiceStatus), default=SaaSInvoiceStatus.UNPAID, nullable=False)
     pdf_url = db.Column(db.String(255), nullable=True)
+    proof_file_path = db.Column(db.String(255), nullable=True)
     payment_method = db.Column(SQLAlchemyEnum(PaymentMethod), nullable=True)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
