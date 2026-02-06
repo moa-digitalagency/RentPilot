@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Paramètres - ColocPilot{% endblock %}
+
+{% block content %}
+<section id="view-config" class="space-y-6 max-w-3xl mx-auto animate-fade-in pb-20">
+    <div class="glass-panel p-8 rounded-3xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Configuration de la Colocation</h2>
+
+        <!-- Steps Indicator -->
+        <div class="flex items-center justify-between mb-8 relative">
+            <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10 rounded-full"></div>
+            <div class="flex flex-col items-center gap-2 bg-white/80 p-2 rounded-xl backdrop-blur z-10">
+                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-500/30">1</div>
+                <span class="text-xs font-medium text-indigo-600">Général</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 bg-white/50 p-2 rounded-xl backdrop-blur z-10">
+                <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm">2</div>
+                <span class="text-xs font-medium text-gray-500">Finances</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 bg-white/50 p-2 rounded-xl backdrop-blur z-10">
+                <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm">3</div>
+                <span class="text-xs font-medium text-gray-500">Invités</span>
+            </div>
+        </div>
+
+        <form class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la colocation</label>
+                    <input type="text" value="Appartement Centre-Ville" class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
+                    <input type="text" value="12 Rue de la Paix, 75000 Paris" class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de chambres</label>
+                    <select class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                        <option>2</option>
+                        <option>3</option>
+                        <option selected>4</option>
+                        <option>5+</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Surface (m²)</label>
+                    <input type="number" value="95" class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Paramètres Financiers</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Loyer Global Mensuel (€)</label>
+                        <input type="number" value="1800" class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+
+                    <div class="flex items-center pt-6">
+                        <label class="flex items-center cursor-pointer gap-3">
+                            <input type="checkbox" id="syndic-check" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300">
+                            <span class="text-sm font-medium text-gray-700">Géré par un syndic ?</span>
+                        </label>
+                    </div>
+
+                    <div id="syndic-input" class="col-span-2 hidden animate-fade-in-down">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Coordonnées du Syndic / Agence</label>
+                        <textarea rows="2" class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Nom, Téléphone, Email..."></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mode de répartition des charges</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="repartition" class="peer sr-only" checked>
+                            <div class="p-4 rounded-xl border border-gray-200 bg-white/40 hover:bg-white/60 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-center text-sm font-medium">
+                                Parts égales
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="repartition" class="peer sr-only">
+                            <div class="p-4 rounded-xl border border-gray-200 bg-white/40 hover:bg-white/60 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-center text-sm font-medium">
+                                Par chambre
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="repartition" class="peer sr-only">
+                            <div class="p-4 rounded-xl border border-gray-200 bg-white/40 hover:bg-white/60 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-center text-sm font-medium">
+                                Par personne
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-6">
+                <button type="button" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-semibold shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 transition-all hover:-translate-y-1">
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
