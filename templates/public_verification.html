@@ -1,90 +1,71 @@
 {% extends "layout_public.html" %}
 
-{% block title %}Vérification de Transaction - RentPilot{% endblock %}
+{% block title %}Vérification du Ticket - RentPilot{% endblock %}
 
 {% block content %}
+<section class="min-h-screen flex items-center justify-center py-20 bg-gray-50">
+    <div class="max-w-md w-full px-4">
 
-<div class="min-h-[calc(100vh-16rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-
-        {% if verification %}
-            {% if verification.status != 'Rejected' %}
-                <!-- VALID TICKET -->
-                <div class="bg-white rounded-3xl shadow-xl border border-emerald-100 overflow-hidden text-center p-8">
-                    <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            {% if verification %}
+                <!-- Valid State -->
+                <div class="bg-green-500 p-6 text-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
+                    <h2 class="text-2xl font-bold text-white mb-1">Certificat Authentique</h2>
+                    <p class="text-green-100 text-sm">Ce reçu a été vérifié avec succès.</p>
+                </div>
 
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Certificat Authentique</h2>
-                    <p class="text-gray-500 mb-8">Ce reçu a été vérifié par RentPilot.</p>
-
-                    <div class="bg-gray-50 rounded-xl p-6 text-left space-y-4">
-                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                            <span class="text-gray-500 text-sm">Émetteur</span>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex justify-between border-b border-gray-100 pb-3">
+                            <span class="text-gray-500">Émetteur</span>
                             <span class="font-semibold text-gray-900">{{ verification.issuer }}</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                            <span class="text-gray-500 text-sm">Objet</span>
+                        <div class="flex justify-between border-b border-gray-100 pb-3">
+                            <span class="text-gray-500">Objet</span>
                             <span class="font-semibold text-gray-900">{{ verification.purpose }}</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                            <span class="text-gray-500 text-sm">Date</span>
-                            <span class="font-semibold text-gray-900">{{ verification.timestamp | replace('T', ' ') if verification.timestamp else '-' }}</span>
+                        <div class="flex justify-between border-b border-gray-100 pb-3">
+                            <span class="text-gray-500">Date</span>
+                            <span class="font-semibold text-gray-900">{{ verification.timestamp[:10] if verification.timestamp else 'N/A' }}</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-200 pb-2">
-                            <span class="text-gray-500 text-sm">Montant</span>
-                            <span class="font-bold text-indigo-600">{{ "%.2f"|format(verification.amount) }} €</span>
+                        <div class="flex justify-between border-b border-gray-100 pb-3">
+                            <span class="text-gray-500">Montant</span>
+                            <span class="font-bold text-indigo-600 text-lg">{{ "%.2f"|format(verification.amount) }} €</span>
                         </div>
-                        <div class="flex justify-between pt-2">
-                            <span class="text-gray-500 text-sm">Statut</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                {{ verification.status }}
-                            </span>
+                        <div class="flex justify-between pt-1">
+                             <span class="text-gray-500 text-xs">N° Ticket</span>
+                             <span class="text-gray-400 text-xs font-mono">{{ verification.ticket_number }}</span>
                         </div>
-                    </div>
-
-                    <div class="mt-8 text-xs text-gray-400">
-                        N° de Ticket : {{ verification.ticket_number }}
                     </div>
                 </div>
             {% else %}
-                <!-- REJECTED TICKET -->
-                 <div class="bg-white rounded-3xl shadow-xl border border-rose-100 overflow-hidden text-center p-8">
-                    <div class="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-12 h-12 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <!-- Invalid State -->
+                <div class="bg-red-500 p-6 text-center">
+                     <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </div>
-
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Transaction Rejetée</h2>
-                    <p class="text-gray-500 mb-8">Ce reçu est marqué comme rejeté ou annulé.</p>
-
-                     <div class="mt-8 text-xs text-gray-400">
-                        N° de Ticket : {{ verification.ticket_number }}
-                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-1">Ticket Invalide</h2>
+                    <p class="text-red-100 text-sm">Ce numéro de ticket n'existe pas ou n'est plus valide.</p>
+                </div>
+                 <div class="p-8 text-center">
+                    <p class="text-gray-600 mb-6">Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'émetteur du reçu.</p>
+                    <a href="{{ url_for('main.index') }}" class="inline-block px-6 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-medium">
+                        Retour à l'accueil
+                    </a>
                 </div>
             {% endif %}
 
-        {% else %}
-            <!-- INVALID / NOT FOUND TICKET -->
-            <div class="bg-white rounded-3xl shadow-xl border border-rose-100 overflow-hidden text-center p-8">
-                <div class="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-12 h-12 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </div>
-
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Ticket Invalide</h2>
-                <p class="text-gray-500 mb-8">Aucune transaction trouvée pour ce numéro de ticket.</p>
-
-                <a href="{{ url_for('main.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Retour à l'accueil</a>
+            <!-- Footer Legal -->
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 text-center">
+                <p class="text-xs text-gray-400">
+                    Vérification sécurisée par RentPilot. <br>
+                    Les données affichées sont certifiées conformes à l'enregistrement original.
+                </p>
             </div>
-        {% endif %}
-
-        <div class="text-center">
-            <p class="text-xs text-gray-400">
-                La vérification des reçus est un service fourni par RentPilot pour garantir la transparence des transactions locatives.
-                <br>RentPilot SAS - Tous droits réservés.
-            </p>
         </div>
-
     </div>
-</div>
-
+</section>
 {% endblock %}
