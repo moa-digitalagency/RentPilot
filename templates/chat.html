@@ -56,7 +56,7 @@
                 <div class="flex items-end gap-2 {{ 'justify-end' if msg.sender_id == current_user.id else '' }}">
                     {% if msg.sender_id != current_user.id %}
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                        {{ msg.sender_name[0] if msg.sender_name else '?' }}
+                        {{ user_map.get(msg.sender_id, '?')[0] | upper }}
                     </div>
                     {% endif %}
 
@@ -83,11 +83,57 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <p class="text-[10px] text-gray-400 {{ 'text-right' if msg.sender_id == current_user.id else '' }}">
-                            {{ msg.timestamp.strftime('%H:%M') }}
-                        </p>
+                        <div class="flex items-center {{ 'justify-end' if msg.sender_id == current_user.id else '' }} gap-1">
+                            <p class="text-[10px] text-gray-400">
+                                {{ msg.timestamp.strftime('%H:%M') }}
+                            </p>
+
+                            <!-- Read Receipts -->
+                            {% if msg.sender_id == current_user.id %}
+                                {% set read_count = msg.read_by_users|length if msg.read_by_users else 0 %}
+                                {% set everyone_read = read_count >= (total_participants - 1) %}
+
+                                <div class="group relative flex items-center">
+                                    {% if everyone_read %}
+                                        <!-- Double Tick Blue (Everyone Read) -->
+                                        <div class="flex -space-x-2">
+                                            <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    {% elif read_count > 0 %}
+                                        <!-- Double Tick Grey (Some Read) -->
+                                        <div class="flex -space-x-2">
+                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    {% else %}
+                                        <!-- Single Tick Grey (Sent) -->
+                                        <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    {% endif %}
+
+                                    <!-- Tooltip showing names -->
+                                    {% if read_count > 0 %}
+                                        <div class="absolute bottom-full right-0 mb-1 hidden group-hover:block whitespace-nowrap bg-gray-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                                            Vu par
+                                            {% for reader in msg.read_by_users %}
+                                                {{ user_map.get(reader.user_id, 'Unknown') }}{{ ', ' if not loop.last else '' }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+                <!-- Observer Marker for messages not read by me -->
+                {% set read_ids = [] %}
+                {% if msg.read_by_users %}
+                    {% set read_ids = msg.read_by_users|map(attribute='user_id')|list %}
+                {% endif %}
+                {% if msg.sender_id != current_user.id and current_user.id not in read_ids %}
+                    <div class="observe-read w-px h-px opacity-0" data-msg-id="{{ msg.id }}"></div>
+                {% endif %}
+
                 {% else %}
                 <div class="text-center text-gray-400 py-10">
                     <p>Aucun message pour le moment.</p>
@@ -283,5 +329,42 @@
     // Auto scroll bottom
     const container = document.getElementById('messages-container');
     container.scrollTop = container.scrollHeight;
+
+    // --- Read Receipts Observer ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const observerOptions = {
+            root: document.getElementById('messages-container'),
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const msgId = entry.target.dataset.msgId;
+                    if (msgId) {
+                        markMessageAsRead(msgId);
+                        observer.unobserve(entry.target);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.observe-read').forEach(el => observer.observe(el));
+    });
+
+    function markMessageAsRead(msgId) {
+        fetch(`/chat/read/${msgId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Add CSRF token if needed, usually flask-wtf handles it or cookies
+            }
+        }).then(response => {
+            if (response.ok) {
+                console.log(`Message ${msgId} marked as read`);
+            }
+        }).catch(err => console.error('Error marking read:', err));
+    }
 </script>
 {% endblock %}
