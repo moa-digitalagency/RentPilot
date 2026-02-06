@@ -1,0 +1,93 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block title %}Paramètres - Admin RentPilot{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-4xl">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Paramètres de la Plateforme</h1>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <form action="{{ url_for('super_admin.update_settings') }}" method="POST" class="p-6 space-y-8">
+
+            <!-- Branding -->
+            <section>
+                <h2 class="text-lg font-semibold text-indigo-600 border-b border-indigo-100 pb-2 mb-4">🎨 Branding</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'application</label>
+                        <input type="text" name="app_name" value="{{ site_settings.app_name }}" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="logo_url" name="logo_url" value="{{ site_settings.logo_url or '' }}" class="flex-1 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://...">
+                            <button type="button" onclick="previewLogo()" class="px-3 py-2 bg-gray-100 rounded-lg border border-gray-200 text-gray-600 text-sm">Preview</button>
+                        </div>
+                        <div class="mt-2 h-12 flex items-center">
+                            <img id="logo-preview" src="{{ site_settings.logo_url }}" class="max-h-full max-w-[150px] object-contain" alt="Logo Preview" onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Couleur Primaire</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" name="primary_color_hex" value="{{ site_settings.primary_color_hex }}" class="h-10 w-20 rounded p-1 cursor-pointer">
+                            <span class="text-sm text-gray-500">{{ site_settings.primary_color_hex }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Couleur Secondaire</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" name="secondary_color_hex" value="{{ site_settings.secondary_color_hex }}" class="h-10 w-20 rounded p-1 cursor-pointer">
+                            <span class="text-sm text-gray-500">{{ site_settings.secondary_color_hex }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEO -->
+            <section>
+                <h2 class="text-lg font-semibold text-indigo-600 border-b border-indigo-100 pb-2 mb-4">🔍 SEO</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Modèle de Titre (Title Template)</label>
+                        <input type="text" name="seo_title_template" value="{{ site_settings.seo_title_template }}" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="%s | RentPilot">
+                        <p class="text-xs text-gray-500 mt-1">Utilisez %s comme placeholder pour le titre de la page.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description par défaut</label>
+                        <textarea name="seo_meta_desc" rows="3" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">{{ site_settings.seo_meta_desc }}</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Maintenance -->
+            <section>
+                <h2 class="text-lg font-semibold text-indigo-600 border-b border-indigo-100 pb-2 mb-4">⚠️ Maintenance</h2>
+                <div class="flex items-center">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_maintenance_mode" value="true" class="sr-only peer" {% if site_settings.is_maintenance_mode %}checked{% endif %}>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-900">Activer le Mode Maintenance</span>
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-2 ml-14">Seuls les Super Admins pourront accéder à l'application.</p>
+            </section>
+
+            <div class="pt-6 border-t border-gray-100 flex justify-end">
+                <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewLogo() {
+        const url = document.getElementById('logo_url').value;
+        const img = document.getElementById('logo-preview');
+        img.style.display = 'block';
+        img.src = url;
+    }
+</script>
+{% endblock %}
