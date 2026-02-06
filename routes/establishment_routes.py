@@ -111,8 +111,56 @@ def assign_tenant(id):
     flash('Tenant assigned', 'success')
     return redirect(url_for('establishment.update_establishment', id=id))
 
-@establishment_bp.route('/establishment/setup')
+@establishment_bp.route('/establishment/setup', methods=['GET', 'POST'])
 @login_required
 @bailleur_required
 def setup():
+    if request.method == 'POST':
+        est = Establishment.query.filter_by(landlord_id=current_user.id).first()
+        if not est:
+            # If no establishment exists, create a basic one
+            # (In a real flow, it might be created earlier or here)
+            est = Establishment(
+                landlord_id=current_user.id,
+                address=request.form.get('address', 'Adresse Inconnue')
+            )
+            db.session.add(est)
+
+        # Handle custom expenses list
+        # Expected to be passed as multiple values for 'custom_expenses'
+        custom_expenses = request.form.getlist('custom_expenses')
+        if custom_expenses:
+            # We filter out empty strings
+            cleaned_expenses = [e for e in custom_expenses if e.strip()]
+            est.expense_types_config = cleaned_expenses
+
+        # Handle other potential setup fields
+        if request.form.get('address'):
+            est.address = request.form.get('address')
+
+        if request.form.get('wifi_cost'):
+            try:
+                est.wifi_cost = float(request.form.get('wifi_cost'))
+            except ValueError:
+                pass
+
+        if request.form.get('syndic_cost'):
+            try:
+                est.syndic_cost = float(request.form.get('syndic_cost'))
+            except ValueError:
+                pass
+
+        # Financial Mode
+        # Assuming frontend sends 'Egal' or 'Inegal' (or similar mapping)
+        split_mode = request.form.get('split_mode') # specific value
+        if split_mode:
+            if split_mode == 'Surface':
+                 est.config_financial_mode = FinancialMode.INEGAL
+            else:
+                 est.config_financial_mode = FinancialMode.EGAL
+
+        db.session.commit()
+        flash('Configuration terminée !', 'success')
+        return redirect(url_for('dashboard.dashboard'))
+
     return render_template('establishment_setup.html')
