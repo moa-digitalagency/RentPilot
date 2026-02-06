@@ -1,7 +1,7 @@
 from flask import Flask
 from config.settings import Config
-from config.extensions import db
-from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType
+from config.extensions import db, configure_uploads
+from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan
 from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp, ticket_bp, main_bp
 from security.pwd_tools import hash_password
 from datetime import date
@@ -11,6 +11,9 @@ from services.i18n_service import i18n
 def create_app():
     app = Flask(__name__, static_folder='statics')
     app.config.from_object(Config)
+
+    configure_uploads(app)
+
     db.init_app(app)
     i18n.init_app(app)
 
@@ -46,6 +49,33 @@ def init_db():
         # Create all tables
         db.create_all()
         print("Created all tables.")
+
+        # Seed Platform Settings
+        if not PlatformSettings.query.first():
+            settings = PlatformSettings()
+            db.session.add(settings)
+            db.session.commit()
+            print("Initialized Platform Settings.")
+
+        # Seed Subscription Plans
+        if not SubscriptionPlan.query.first():
+            free_plan = SubscriptionPlan(
+                name="Gratuit",
+                price_monthly=0.0,
+                currency="EUR",
+                features_json={"max_rooms": 3, "enable_chat": True, "support": "basic"},
+                is_active=True
+            )
+            pro_plan = SubscriptionPlan(
+                name="Pro",
+                price_monthly=29.99,
+                currency="EUR",
+                features_json={"max_rooms": 100, "enable_chat": True, "support": "priority", "branding": True},
+                is_active=True
+            )
+            db.session.add_all([free_plan, pro_plan])
+            db.session.commit()
+            print("Initialized Subscription Plans.")
 
         # Seed Data
         # 1 Bailleur (Landlord)
