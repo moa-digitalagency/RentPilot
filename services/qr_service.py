@@ -57,3 +57,25 @@ class QRService:
         img_buffer = QRService.generate_qr_code(transaction_id, user_id, amount)
         img_str = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
         return f"data:image/png;base64,{img_str}"
+
+    @staticmethod
+    def generate_url_qr(url: str) -> io.BytesIO:
+        """
+        Generates a QR Code image (PNG) for a given URL.
+        Returns the image as a BytesIO stream.
+        """
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        img_buffer = io.BytesIO()
+        img.save(img_buffer, format="PNG")
+        img_buffer.seek(0)
+        return img_buffer
