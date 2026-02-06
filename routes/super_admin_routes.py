@@ -26,6 +26,10 @@ def dashboard():
                            total_users=total_users,
                            total_establishments=total_establishments)
 
+@super_admin_bp.route('/settings', methods=['GET'])
+def settings_view():
+    return render_template('admin/settings.html')
+
 @super_admin_bp.route('/settings', methods=['POST'])
 def update_settings():
     settings = PlatformSettings.query.first()
@@ -41,9 +45,17 @@ def update_settings():
     settings.seo_title_template = request.form.get('seo_title_template', settings.seo_title_template)
     settings.seo_meta_desc = request.form.get('seo_meta_desc', settings.seo_meta_desc)
 
+    # Handle maintenance mode checkbox (if not present, it's False)
+    settings.is_maintenance_mode = request.form.get('is_maintenance_mode') == 'true'
+
     db.session.commit()
     flash('Settings updated successfully.', 'success')
-    return redirect(url_for('super_admin.dashboard'))
+    return redirect(url_for('super_admin.settings_view'))
+
+@super_admin_bp.route('/plans', methods=['GET'])
+def plans_view():
+    plans = SubscriptionPlan.query.all()
+    return render_template('admin/plans.html', plans=plans)
 
 @super_admin_bp.route('/plans', methods=['POST'])
 def manage_plans():
@@ -58,10 +70,10 @@ def manage_plans():
         price_val = float(price)
     except json.JSONDecodeError:
         flash('Invalid JSON for features.', 'error')
-        return redirect(url_for('super_admin.dashboard'))
+        return redirect(url_for('super_admin.plans_view'))
     except (ValueError, TypeError):
         flash('Invalid price format.', 'error')
-        return redirect(url_for('super_admin.dashboard'))
+        return redirect(url_for('super_admin.plans_view'))
 
     if plan_id:
         plan = SubscriptionPlan.query.get(plan_id)
@@ -83,7 +95,7 @@ def manage_plans():
         flash('Plan created.', 'success')
 
     db.session.commit()
-    return redirect(url_for('super_admin.dashboard'))
+    return redirect(url_for('super_admin.plans_view'))
 
 @super_admin_bp.route('/invoices', methods=['GET'])
 def list_invoices():
@@ -94,7 +106,7 @@ def list_invoices():
         query = query.filter(SaaSInvoice.status == SaaSInvoiceStatus.OFFLINE_PENDING)
 
     invoices = query.order_by(SaaSInvoice.created_at.desc()).all()
-    return render_template('admin/invoices.html', invoices=invoices)
+    return render_template('admin/invoices_review.html', invoices=invoices)
 
 @super_admin_bp.route('/invoices/<int:invoice_id>/approve', methods=['POST'])
 def approve_invoice(invoice_id):

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full shadow-lg">
+    <!-- Brand -->
+    <div class="flex items-center justify-center h-16 border-b border-white/10">
+        <a href="{{ url_for('super_admin.dashboard') }}" class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">A</div>
+            <span class="text-xl font-bold tracking-tight">AdminPanel</span>
+        </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        {% set admin_nav = [
+            ('super_admin.dashboard', 'Dashboard', '📊'),
+            ('super_admin.settings_view', 'Paramètres', '⚙️'),
+            ('super_admin.plans_view', 'Abonnements', '💎'),
+            ('super_admin.list_invoices', 'Facturation', '💳'),
+            ('#', 'Utilisateurs', '👥')
+        ] %}
+
+        {% for endpoint, label, icon in admin_nav %}
+        <a href="{{ url_for(endpoint) if endpoint != '#' else '#' }}"
+           class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {{ 'bg-indigo-600 text-white shadow-sm' if request.endpoint == endpoint else 'text-gray-400 hover:bg-slate-800 hover:text-white' }}">
+            <span class="mr-3">{{ icon }}</span>
+            <span>{{ label }}</span>
+        </a>
+        {% endfor %}
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-4 border-t border-white/10">
+        <div class="flex items-center p-3 rounded-xl bg-slate-800 border border-white/5 mb-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold">
+                SA
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium">Super Admin</p>
+            </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="flex items-center justify-center px-4 py-2 rounded-lg text-sm bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors">
+            Déconnexion
+        </a>
+    </div>
+</aside>
+{% endblock %}

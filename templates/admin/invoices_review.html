@@ -1,0 +1,73 @@
+{% extends "admin/layout_admin.html" %}
+
+{% block title %}Facturation - Admin RentPilot{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-6xl">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Revue des Paiements Hors Ligne</h1>
+
+    <!-- Tabs/Filter -->
+    <div class="flex space-x-4 mb-6">
+        <a href="{{ url_for('super_admin.list_invoices', status='offline_pending') }}" class="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white shadow-md">En attente</a>
+        <a href="{{ url_for('super_admin.list_invoices') }}" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100">Tous</a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Établissement</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Montant</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Preuve</th>
+                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for invoice in invoices %}
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 text-sm text-gray-900">#{{ invoice.id }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ invoice.establishment.name or 'N/A' }}</td>
+                    <td class="px-6 py-4 text-sm font-bold text-gray-900">{{ "%.2f"|format(invoice.amount) }} €</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ invoice.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-6 py-4">
+                        {% if invoice.status.name == 'PAID' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Payé</span>
+                        {% elif invoice.status.name == 'OFFLINE_PENDING' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">En Attente</span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ invoice.status.name }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if invoice.proof_file_path %}
+                            <a href="{{ url_for('static', filename=invoice.proof_file_path) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                Voir
+                            </a>
+                        {% else %}
+                            <span class="text-gray-400 text-xs">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        {% if invoice.status.name == 'OFFLINE_PENDING' %}
+                        <form action="{{ url_for('super_admin.approve_invoice', invoice_id=invoice.id) }}" method="POST" class="inline-block">
+                            <button type="submit" class="text-emerald-600 hover:text-emerald-900 font-medium text-sm border border-emerald-200 bg-emerald-50 px-3 py-1 rounded hover:bg-emerald-100 transition-colors">
+                                Valider
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">Aucune facture à afficher.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

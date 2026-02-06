@@ -16,6 +16,8 @@ def login():
         success, role = authenticate_and_login_user(email, password)
 
         if success:
+            if role == 'SuperAdmin':
+                return redirect(url_for('super_admin.dashboard'))
             return redirect(url_for('dashboard.dashboard'))
         else:
             flash('Invalid email or password', 'error')
