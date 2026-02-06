@@ -6,6 +6,10 @@ class FinancialMode(enum.Enum):
     EGAL = 'Egal'
     INEGAL = 'Inegal'
 
+class SaaSBilledTo(enum.Enum):
+    LANDLORD = 'Landlord'
+    TENANTS = 'Tenants'
+
 class Establishment(db.Model):
     __tablename__ = 'establishments'
 
@@ -16,11 +20,14 @@ class Establishment(db.Model):
     fuzzy_location = db.Column(db.String(255), nullable=True)
 
     # Configuration
+    subscription_plan_id = db.Column(db.Integer, db.ForeignKey('subscription_plans.id'), nullable=True)
     config_financial_mode = db.Column(SQLAlchemyEnum(FinancialMode), nullable=False, default=FinancialMode.EGAL)
+    saas_billed_to = db.Column(SQLAlchemyEnum(SaaSBilledTo), nullable=False, default=SaaSBilledTo.LANDLORD)
     wifi_cost = db.Column(db.Float, default=0.0)
     syndic_cost = db.Column(db.Float, default=0.0)
 
     # Relationships
+    subscription_plan = db.relationship('SubscriptionPlan', backref='establishments')
     rooms = db.relationship('Room', backref='establishment', lazy=True)
     # expenses relationship will be defined in finance.py via backref or we can define it here if possible.
     # Usually backref in Expense is enough.
