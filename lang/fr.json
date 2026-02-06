@@ -1,0 +1,37 @@
+{
+    "app": {
+        "title": "RentPilot"
+    },
+    "nav": {
+        "dashboard": "Tableau de bord",
+        "finances": "Finances",
+        "chat": "Messagerie",
+        "works": "Travaux",
+        "marketplace": "Marketplace"
+    },
+    "user": {
+        "guest": "Invité",
+        "visitor": "Visiteur",
+        "login": "Connexion",
+        "logout": "Déconnexion"
+    },
+    "role": {
+        "ADMIN": "Admin",
+        "BAILLEUR": "Bailleur",
+        "TENANT_RESPONSABLE": "Responsable",
+        "COLOCATAIRE": "Colocataire"
+    },
+    "landing": {
+        "features": "Fonctionnalités",
+        "pricing": "Tarifs",
+        "register": "S'inscrire",
+        "hero_badge": "🚀 Nouvelle version disponible",
+        "hero_title": "La colocation <br> <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600\">sans friction.</span>",
+        "hero_subtitle": "Centralisez loyers, charges et communications. RentPilot automatise la gestion pour les bailleurs et simplifie la vie des colocataires.",
+        "start_free": "Commencer gratuitement",
+        "demo": "Voir la démo"
+    },
+    "footer": {
+        "rights": "Tous droits réservés."
+    }
+}

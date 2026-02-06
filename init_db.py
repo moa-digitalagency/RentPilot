@@ -6,11 +6,13 @@ from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp,
 from security.pwd_tools import hash_password
 from datetime import date
 from flask_login import LoginManager
+from services.i18n_service import i18n
 
 def create_app():
     app = Flask(__name__, static_folder='statics')
     app.config.from_object(Config)
     db.init_app(app)
+    i18n.init_app(app)
 
     # Init LoginManager
     login_manager = LoginManager()
