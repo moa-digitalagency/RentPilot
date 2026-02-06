@@ -2,7 +2,8 @@ from flask import Flask
 from config.settings import Config
 from config.extensions import db, configure_uploads
 from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan
-from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp, ticket_bp, main_bp
+from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp, ticket_bp, main_bp, super_admin_bp
+from routes.context_processors import register_context_processors
 from security.pwd_tools import hash_password
 from datetime import date
 from flask_login import LoginManager
@@ -16,6 +17,8 @@ def create_app():
 
     db.init_app(app)
     i18n.init_app(app)
+
+    register_context_processors(app)
 
     # Init LoginManager
     login_manager = LoginManager()
@@ -34,6 +37,7 @@ def create_app():
     app.register_blueprint(finance_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(ticket_bp)
+    app.register_blueprint(super_admin_bp)
 
     return app
 
