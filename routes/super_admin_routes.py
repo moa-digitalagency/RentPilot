@@ -69,7 +69,12 @@ def update_receipt_settings():
 
 @super_admin_bp.route('/settings', methods=['GET'])
 def settings_view():
-    return render_template('admin/settings.html')
+    settings = PlatformSettings.query.first()
+    if not settings:
+        settings = PlatformSettings()
+        db.session.add(settings)
+        db.session.commit()
+    return render_template('admin/settings.html', site_settings=settings)
 
 @super_admin_bp.route('/settings', methods=['POST'])
 def update_settings():

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_login import login_required, current_user
 from security.auth import bailleur_required
 from models.establishment import Establishment, Room, Lease, FinancialMode
@@ -116,43 +116,46 @@ def assign_tenant(id):
 @bailleur_required
 def setup():
     if request.method == 'POST':
+        data = {}
+        if request.is_json:
+            data = request.get_json()
+        else:
+            # Helper to mimic json structure from form
+            data = request.form.to_dict()
+            data['custom_expenses'] = request.form.getlist('custom_expenses')
+
         est = Establishment.query.filter_by(landlord_id=current_user.id).first()
+
+        address = data.get('address')
         if not est:
-            # If no establishment exists, create a basic one
-            # (In a real flow, it might be created earlier or here)
             est = Establishment(
                 landlord_id=current_user.id,
-                address=request.form.get('address', 'Adresse Inconnue')
+                address=address if address else 'Adresse Inconnue'
             )
             db.session.add(est)
 
-        # Handle custom expenses list
-        # Expected to be passed as multiple values for 'custom_expenses'
-        custom_expenses = request.form.getlist('custom_expenses')
+        # Update fields
+        custom_expenses = data.get('custom_expenses')
         if custom_expenses:
-            # We filter out empty strings
-            cleaned_expenses = [e for e in custom_expenses if e.strip()]
-            est.expense_types_config = cleaned_expenses
+             if isinstance(custom_expenses, list):
+                 est.expense_types_config = [e for e in custom_expenses if isinstance(e, str) and e.strip()]
 
-        # Handle other potential setup fields
-        if request.form.get('address'):
-            est.address = request.form.get('address')
+        if address:
+            est.address = address
 
-        if request.form.get('wifi_cost'):
+        if data.get('wifi_cost'):
             try:
-                est.wifi_cost = float(request.form.get('wifi_cost'))
-            except ValueError:
+                est.wifi_cost = float(data.get('wifi_cost'))
+            except (ValueError, TypeError):
                 pass
 
-        if request.form.get('syndic_cost'):
+        if data.get('syndic_cost'):
             try:
-                est.syndic_cost = float(request.form.get('syndic_cost'))
-            except ValueError:
+                est.syndic_cost = float(data.get('syndic_cost'))
+            except (ValueError, TypeError):
                 pass
 
-        # Financial Mode
-        # Assuming frontend sends 'Egal' or 'Inegal' (or similar mapping)
-        split_mode = request.form.get('split_mode') # specific value
+        split_mode = data.get('split_mode')
         if split_mode:
             if split_mode == 'Surface':
                  est.config_financial_mode = FinancialMode.INEGAL
@@ -160,6 +163,10 @@ def setup():
                  est.config_financial_mode = FinancialMode.EGAL
 
         db.session.commit()
+
+        if request.is_json:
+             return jsonify({'status': 'success', 'redirect_url': url_for('dashboard.dashboard')})
+
         flash('Configuration terminée !', 'success')
         return redirect(url_for('dashboard.dashboard'))
 

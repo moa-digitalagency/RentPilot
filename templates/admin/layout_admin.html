@@ -1,47 +1,54 @@
 {% extends "base.html" %}
 
 {% block sidebar %}
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full shadow-lg">
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 glass-sidebar transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full shadow-lg">
     <!-- Brand -->
-    <div class="flex items-center justify-center h-16 border-b border-white/10">
+    <div class="flex items-center justify-center h-16 border-b border-white/20">
         <a href="{{ url_for('super_admin.dashboard') }}" class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">A</div>
-            <span class="text-xl font-bold tracking-tight">AdminPanel</span>
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">SA</div>
+            <span class="text-xl font-bold text-gray-900 tracking-tight">SUPER ADMIN</span>
         </a>
+        <button id="sidebar-close" class="md:hidden absolute right-4 text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
     </div>
 
     <!-- Navigation -->
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {% set admin_nav = [
-            ('super_admin.dashboard', 'Dashboard', '📊'),
-            ('super_admin.settings_view', 'Paramètres', '⚙️'),
-            ('super_admin.plans_view', 'Abonnements', '💎'),
-            ('super_admin.list_invoices', 'Facturation', '💳'),
-            ('#', 'Utilisateurs', '👥')
+            ('super_admin.dashboard', 'Dashboard', 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'),
+            ('super_admin.export_stats', 'Exports Stats', 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'),
+            ('super_admin.list_invoices', 'Facturation', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'),
+            ('super_admin.plans_view', 'Abonnements', 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z'),
+            ('super_admin.settings_view', 'Paramètres / Config', 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z')
         ] %}
 
-        {% for endpoint, label, icon in admin_nav %}
-        <a href="{{ url_for(endpoint) if endpoint != '#' else '#' }}"
-           class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {{ 'bg-indigo-600 text-white shadow-sm' if request.endpoint == endpoint else 'text-gray-400 hover:bg-slate-800 hover:text-white' }}">
-            <span class="mr-3">{{ icon }}</span>
+        {% for endpoint, label, icon_svg in admin_nav %}
+        {% set is_active = request.endpoint and endpoint in request.endpoint %}
+        <a href="{{ url_for(endpoint) }}"
+           class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {{ 'bg-indigo-600/10 text-indigo-700 shadow-sm border border-indigo-200/50 font-medium' if is_active else 'text-gray-600 hover:bg-white/50 hover:text-indigo-600' }}">
+            <svg class="w-5 h-5 mr-3 {{ 'text-indigo-600' if is_active else 'text-gray-400 group-hover:text-indigo-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon_svg }}"></path>
+            </svg>
             <span>{{ label }}</span>
         </a>
         {% endfor %}
     </nav>
 
-    <!-- Logout -->
-    <div class="p-4 border-t border-white/10">
-        <div class="flex items-center p-3 rounded-xl bg-slate-800 border border-white/5 mb-2">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold">
+    <!-- User Profile (Bottom Sidebar) -->
+    <div class="p-4 border-t border-white/20">
+        <div class="flex items-center p-3 rounded-xl bg-white/40 border border-white/30 backdrop-blur-sm shadow-sm">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
                 SA
             </div>
-            <div class="ml-3">
-                <p class="text-sm font-medium">Super Admin</p>
+            <div class="ml-3 overflow-hidden">
+                <p class="text-sm font-medium text-gray-900 truncate">Super Admin</p>
+                <p class="text-xs text-gray-500 truncate">Administrateur</p>
             </div>
+            <a href="{{ url_for('auth.logout') }}" class="ml-auto text-gray-400 hover:text-rose-500" title="Déconnexion">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </a>
         </div>
-        <a href="{{ url_for('auth.logout') }}" class="flex items-center justify-center px-4 py-2 rounded-lg text-sm bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors">
-            Déconnexion
-        </a>
     </div>
 </aside>
 {% endblock %}

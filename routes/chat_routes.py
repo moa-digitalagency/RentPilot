@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_login import login_required, current_user
-from models import ChatRoom, Message, ChannelType, MessageType, UserRole
+from models import ChatRoom, Message, ChannelType, MessageType, UserRole, Establishment, Lease, Room
 from config.extensions import db
 from datetime import datetime
 from services.chat_media_service import ChatMediaService
@@ -12,7 +12,7 @@ chat_bp = Blueprint('chat', __name__)
 @login_required
 def index():
     # In a real scenario, fetch available rooms for the user
-    return render_template('chat.html')
+    return render_template('chat.html', messages=[], user_map={}, total_participants=0)
 
 @chat_bp.route('/chat/<int:room_id>', methods=['GET'])
 @login_required
@@ -30,7 +30,26 @@ def view_chat(room_id):
 
     messages = Message.query.filter_by(chat_room_id=room_id).order_by(Message.timestamp).all()
 
-    return render_template('chat/view.html', chat_room=chat_room, messages=messages)
+    # Get participants to build user map and count
+    est = Establishment.query.get(chat_room.establishment_id)
+    participants = []
+    if est:
+        # Tenants
+        active_leases = Lease.query.join(Room).filter(Room.establishment_id == est.id).all()
+        tenants = [l.tenant for l in active_leases]
+        participants.extend(tenants)
+
+        # Landlord (if General)
+        if chat_room.type == ChannelType.GENERAL:
+            participants.append(est.landlord)
+
+    # Remove duplicates if any
+    participants = list({p.id: p for p in participants}.values())
+
+    user_map = {p.id: p.email.split('@')[0] for p in participants}
+    total_participants = len(participants)
+
+    return render_template('chat.html', chat_room=chat_room, messages=messages, user_map=user_map, total_participants=total_participants)
 
 @chat_bp.route('/chat/<int:room_id>/send', methods=['POST'])
 @login_required
