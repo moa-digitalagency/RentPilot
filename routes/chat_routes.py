@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
-from models.communication import ChatRoom, Message, ChannelType
-from models.users import UserRole
+from models import ChatRoom, Message, ChannelType, MessageType, UserRole
 from config.extensions import db
 from datetime import datetime
+from services.chat_media_service import ChatMediaService
 
 chat_bp = Blueprint('chat', __name__)
 
@@ -42,14 +42,49 @@ def send_message(room_id):
             abort(403)
 
     content = request.form.get('content')
-    if content:
-        msg = Message(
-            chat_room_id=room_id,
-            sender_id=current_user.id,
-            content=content,
-            timestamp=datetime.utcnow()
-        )
-        db.session.add(msg)
-        db.session.commit()
+    file = request.files.get('file')
+
+    # Check if we have content or a file with a filename
+    has_file = file and file.filename
+    if not content and not has_file:
+        flash('Message cannot be empty.', 'warning')
+        return redirect(url_for('chat.view_chat', room_id=room_id))
+
+    msg_type = MessageType.TEXT
+    file_url = None
+    duration = None
+
+    if file and file.filename:
+        try:
+            file_url = ChatMediaService.process_and_save(file)
+
+            # Determine type based on extension
+            ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+
+            if ext in ChatMediaService.ALLOWED_EXTENSIONS_AUDIO:
+                msg_type = MessageType.VOICE
+                # If client sends duration (e.g. from recording JS), use it
+                try:
+                    duration = int(request.form.get('duration', 0))
+                except ValueError:
+                    duration = 0
+            elif ext in ChatMediaService.ALLOWED_EXTENSIONS_IMG:
+                msg_type = MessageType.IMAGE
+
+        except ValueError as e:
+            flash(str(e), 'error')
+            return redirect(url_for('chat.view_chat', room_id=room_id))
+
+    msg = Message(
+        chat_room_id=room_id,
+        sender_id=current_user.id,
+        content=content,
+        type=msg_type,
+        file_url=file_url,
+        duration=duration,
+        timestamp=datetime.utcnow()
+    )
+    db.session.add(msg)
+    db.session.commit()
 
     return redirect(url_for('chat.view_chat', room_id=room_id))
