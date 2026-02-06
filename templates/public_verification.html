@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification de Reçu - RentPilot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50 min-h-screen flex items-center justify-center p-4 font-['Inter']">
+
+    <div class="max-w-md w-full glass rounded-3xl shadow-xl overflow-hidden p-8 text-center animate-fade-in">
+        {% if verification %}
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Reçu Valide</h1>
+            <p class="text-gray-500 mb-8">Ce document est authentique.</p>
+
+            <div class="space-y-4 text-left">
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-500">Montant</span>
+                    <span class="font-bold text-gray-900">{{ "%.2f"|format(verification.amount) }} €</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-500">Date</span>
+                    <span class="font-medium text-gray-900">{{ verification.timestamp[:10] if verification.timestamp else 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-500">Émetteur</span>
+                    <span class="font-medium text-gray-900 truncate max-w-[150px]">{{ verification.issuer }}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-500">Motif</span>
+                    <span class="font-medium text-gray-900 truncate max-w-[150px]">{{ verification.purpose }}</span>
+                </div>
+                 <div class="flex justify-between pt-2">
+                    <span class="text-xs text-gray-400">N° Ticket</span>
+                    <span class="text-xs text-gray-400 font-mono">{{ verification.ticket_number }}</span>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Document Invalide</h1>
+            <p class="text-gray-500 mb-6">Impossible de vérifier ce reçu. Il n'existe pas ou a été annulé.</p>
+        {% endif %}
+
+        <div class="mt-10 pt-6 border-t border-gray-100">
+            <p class="text-xs text-gray-400">Vérifié par RentPilot Security</p>
+        </div>
+    </div>
+
+</body>
+</html>

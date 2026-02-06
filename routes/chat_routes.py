@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_login import login_required, current_user
 from models import ChatRoom, Message, ChannelType, MessageType, UserRole
 from config.extensions import db
 from datetime import datetime
 from services.chat_media_service import ChatMediaService
+from services.chat_service import ChatService
 
 chat_bp = Blueprint('chat', __name__)
 
@@ -88,3 +89,12 @@ def send_message(room_id):
     db.session.commit()
 
     return redirect(url_for('chat.view_chat', room_id=room_id))
+
+@chat_bp.route('/chat/read/<int:msg_id>', methods=['POST'])
+@login_required
+def mark_read(msg_id):
+    """
+    Mark a specific message as read by the current user.
+    """
+    success = ChatService.mark_message_as_read(msg_id, current_user.id)
+    return jsonify({'success': success})

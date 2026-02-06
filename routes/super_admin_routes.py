@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app, send_file
 from flask_login import login_required, current_user
 from security.auth import super_admin_required
 from models import PlatformSettings, SubscriptionPlan, SaaSInvoice, SaaSInvoiceStatus, PaymentMethod, User, Establishment, Announcement, AnnouncementSenderType, AnnouncementTargetAudience, AnnouncementPriority
+from models.saas_config import ReceiptFormat
+from services.pdf_service import PDFService
 from config.extensions import db
 from datetime import datetime
 import json
@@ -25,6 +27,45 @@ def dashboard():
                            total_revenue=total_revenue,
                            total_users=total_users,
                            total_establishments=total_establishments)
+
+@super_admin_bp.route('/stats/export', methods=['GET'])
+def export_stats():
+    # Default to current year
+    now = datetime.utcnow()
+    start_date = datetime(now.year, 1, 1)
+    end_date = now
+
+    pdf_buffer = PDFService.generate_admin_stats_pdf((start_date, end_date))
+
+    return send_file(
+        pdf_buffer,
+        as_attachment=True,
+        download_name=f"admin_stats_{now.strftime('%Y%m%d')}.pdf",
+        mimetype='application/pdf'
+    )
+
+@super_admin_bp.route('/settings/receipts', methods=['POST'])
+def update_receipt_settings():
+    settings = PlatformSettings.query.first()
+    if not settings:
+        settings = PlatformSettings()
+        db.session.add(settings)
+
+    receipt_format = request.form.get('receipt_format')
+    whatsapp = request.form.get('whatsapp_contact_number')
+
+    if receipt_format:
+        try:
+            settings.receipt_format = ReceiptFormat(receipt_format)
+        except ValueError:
+            flash('Invalid receipt format.', 'error')
+            return redirect(url_for('super_admin.settings_view'))
+
+    settings.whatsapp_contact_number = whatsapp
+    db.session.commit()
+
+    flash('Receipt settings updated.', 'success')
+    return redirect(url_for('super_admin.settings_view'))
 
 @super_admin_bp.route('/settings', methods=['GET'])
 def settings_view():
