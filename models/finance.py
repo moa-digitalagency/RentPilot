@@ -3,6 +3,13 @@ from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlalchemy.sql import func
 import enum
 from datetime import datetime
+import secrets
+import string
+
+def generate_trx_id():
+    part1 = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+    part2 = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+    return f"TRX-{part1}-{part2}"
 
 class ExpenseType(enum.Enum):
     EAU = 'Eau'
@@ -43,6 +50,7 @@ class Transaction(db.Model):
     __tablename__ = 'transactions'
 
     id = db.Column(db.Integer, primary_key=True)
+    ticket_number = db.Column(db.String(20), unique=True, nullable=False, default=generate_trx_id)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id'), nullable=True) # Can be null if it's just a general payment? Or required?
     amount = db.Column(db.Float, nullable=False)

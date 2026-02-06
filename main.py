@@ -1,4 +1,4 @@
-from init_db import create_app
+from config.init_app import create_app
 
 app = create_app()
 

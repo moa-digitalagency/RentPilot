@@ -1,45 +1,11 @@
-from flask import Flask
-from config.settings import Config
-from config.extensions import db, configure_uploads
-from models import User, Establishment, Room, Lease, UserRole, FinancialMode, ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan
-from routes import auth_bp, dashboard_bp, establishment_bp, finance_bp, chat_bp, ticket_bp, main_bp, super_admin_bp
-from routes.context_processors import register_context_processors
+from config.init_app import create_app
+from config.extensions import db
+from models import (
+    User, Establishment, Room, Lease, UserRole, FinancialMode,
+    ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan, ReceiptFormat
+)
 from security.pwd_tools import hash_password
 from datetime import date
-from flask_login import LoginManager
-from services.i18n_service import i18n
-
-def create_app():
-    app = Flask(__name__, static_folder='statics')
-    app.config.from_object(Config)
-
-    configure_uploads(app)
-
-    db.init_app(app)
-    i18n.init_app(app)
-
-    register_context_processors(app)
-
-    # Init LoginManager
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
-
-    # Register Blueprints
-    app.register_blueprint(main_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(establishment_bp)
-    app.register_blueprint(finance_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(ticket_bp)
-    app.register_blueprint(super_admin_bp)
-
-    return app
 
 def init_db():
     app = create_app()
@@ -56,7 +22,9 @@ def init_db():
 
         # Seed Platform Settings
         if not PlatformSettings.query.first():
-            settings = PlatformSettings()
+            settings = PlatformSettings(
+                receipt_format=ReceiptFormat.A4_Standard
+            )
             db.session.add(settings)
             db.session.commit()
             print("Initialized Platform Settings.")
@@ -100,7 +68,8 @@ def init_db():
             fuzzy_location='Paris 1er Arrondissement (approx)',
             config_financial_mode=FinancialMode.EGAL,
             wifi_cost=29.99,
-            syndic_cost=50.0
+            syndic_cost=50.0,
+            expense_types_config=["Loyer", "Eau", "Internet", "Ménage"]
         )
         db.session.add(establishment)
         db.session.commit()

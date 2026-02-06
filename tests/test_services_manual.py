@@ -7,7 +7,7 @@ from PIL import Image
 # Add root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from init_db import create_app
+from config.init_app import create_app
 from config.extensions import db
 from models.establishment import Establishment, SaaSBilledTo
 from models.finance import SaaSInvoice, Invoice, ExpenseType, SaaSInvoiceStatus, PaymentMethod
@@ -32,8 +32,10 @@ class TestServices(unittest.TestCase):
         db.create_all()
 
         # Setup basic data
-        user = User(id=1, role=UserRole.BAILLEUR, email="test@test.com", password_hash="hash")
+        user = User(role=UserRole.BAILLEUR, email="test@test.com", password_hash="hash")
         db.session.add(user)
+        db.session.commit()
+        self.user = user
 
         self.plan = SubscriptionPlan(name="ProTest", price_monthly=50.0, is_active=True)
         db.session.add(self.plan)
@@ -85,7 +87,7 @@ class TestServices(unittest.TestCase):
     def test_billing_service_landlord(self):
         # Create Establishment
         est = Establishment(
-            landlord_id=1, address="Test",
+            landlord_id=self.user.id, address="Test",
             saas_billed_to=SaaSBilledTo.LANDLORD,
             subscription_plan_id=self.plan.id
         )
@@ -108,7 +110,7 @@ class TestServices(unittest.TestCase):
     def test_billing_service_tenant(self):
         # Create Establishment
         est = Establishment(
-            landlord_id=1, address="Test2",
+            landlord_id=self.user.id, address="Test2",
             saas_billed_to=SaaSBilledTo.TENANTS,
             subscription_plan_id=self.plan.id
         )
@@ -130,7 +132,7 @@ class TestServices(unittest.TestCase):
 
     def test_offline_payment(self):
         est = Establishment(
-            landlord_id=1, address="Test3",
+            landlord_id=self.user.id, address="Test3",
             subscription_plan_id=self.plan.id
         )
         db.session.add(est)

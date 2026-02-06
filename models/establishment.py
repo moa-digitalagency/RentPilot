@@ -26,11 +26,20 @@ class Establishment(db.Model):
     wifi_cost = db.Column(db.Float, default=0.0)
     syndic_cost = db.Column(db.Float, default=0.0)
 
+    expense_types_config = db.Column(db.JSON, default=list)
+
     # Relationships
     subscription_plan = db.relationship('SubscriptionPlan', backref='establishments')
     rooms = db.relationship('Room', backref='establishment', lazy=True)
     # expenses relationship will be defined in finance.py via backref or we can define it here if possible.
     # Usually backref in Expense is enough.
+
+    def get_active_expenses(self):
+        """Returns the list of active expenses."""
+        if self.expense_types_config:
+            return self.expense_types_config
+        # Return defaults if not configured
+        return ['Loyer', 'Eau', 'Elec', 'Wifi', 'Travaux']
 
 class Room(db.Model):
     __tablename__ = 'rooms'
