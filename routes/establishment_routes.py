@@ -110,3 +110,9 @@ def assign_tenant(id):
 
     flash('Tenant assigned', 'success')
     return redirect(url_for('establishment.update_establishment', id=id))
+
+@establishment_bp.route('/establishment/setup')
+@login_required
+@bailleur_required
+def setup():
+    return render_template('establishment_setup.html')

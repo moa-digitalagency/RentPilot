@@ -23,7 +23,7 @@ def list_tickets():
         # Tenant sees tickets they created
         tickets = Ticket.query.filter_by(requester_id=current_user.id).all()
 
-    return render_template('ticket/list.html', tickets=tickets)
+    return render_template('tickets.html', tickets=tickets)
 
 @ticket_bp.route('/tickets/create', methods=['GET', 'POST'])
 @login_required
@@ -67,4 +67,4 @@ def create_ticket():
     if current_user.role == UserRole.BAILLEUR:
         context['establishments'] = Establishment.query.filter_by(landlord_id=current_user.id).all()
 
-    return render_template('ticket/create.html', **context)
+    return render_template('tickets.html', **context)

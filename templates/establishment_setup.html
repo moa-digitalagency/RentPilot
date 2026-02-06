@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration Colocation - RentPilot{% endblock %}
+
+{% block content %}
+<section id="view-setup" class="max-w-4xl mx-auto py-8 animate-fade-in">
+    <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold text-gray-900">Configurer votre colocation</h2>
+        <p class="text-gray-500 mt-2">Suivez les étapes pour mettre en place votre gestion sur RentPilot.</p>
+    </div>
+
+    <!-- Wizard Progress Bar -->
+    <div class="relative mb-12">
+        <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 rounded-full"></div>
+        <div id="progress-bar" class="absolute top-1/2 left-0 w-0 h-1 bg-indigo-600 -translate-y-1/2 rounded-full transition-all duration-500"></div>
+
+        <div class="relative flex justify-between">
+            <!-- Step 1 Indicator -->
+            <div class="step-indicator active flex flex-col items-center gap-2" data-step="1">
+                <div class="w-10 h-10 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold z-10 transition-colors">1</div>
+                <span class="text-xs font-bold text-indigo-600">Informations</span>
+            </div>
+            <!-- Step 2 Indicator -->
+            <div class="step-indicator flex flex-col items-center gap-2" data-step="2">
+                <div class="w-10 h-10 rounded-full bg-white border-2 border-gray-200 text-gray-400 flex items-center justify-center font-bold z-10 transition-colors">2</div>
+                <span class="text-xs font-bold text-gray-400">Pièces</span>
+            </div>
+            <!-- Step 3 Indicator -->
+            <div class="step-indicator flex flex-col items-center gap-2" data-step="3">
+                <div class="w-10 h-10 rounded-full bg-white border-2 border-gray-200 text-gray-400 flex items-center justify-center font-bold z-10 transition-colors">3</div>
+                <span class="text-xs font-bold text-gray-400">Finances</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step Contents -->
+    <form id="setup-form">
+        <!-- Step 1: General Info -->
+        <div id="step-1-content" class="setup-step glass p-8 rounded-3xl space-y-6">
+            <h3 class="text-xl font-bold text-gray-900">Étape 1 : Informations Générales</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Nom de la colocation</label>
+                    <input type="text" placeholder="Ex: Loft République" class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Adresse</label>
+                    <input type="text" placeholder="Adresse complète" class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Surface totale (m²)</label>
+                    <input type="number" class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Type de bien</label>
+                    <select class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        <option>Appartement</option>
+                        <option>Maison</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end pt-4">
+                <button type="button" onclick="nextStep(2)" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+                    Continuer
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Rooms -->
+        <div id="step-2-content" class="setup-step hidden glass p-8 rounded-3xl space-y-6">
+            <h3 class="text-xl font-bold text-gray-900">Étape 2 : Gestion des pièces</h3>
+            <div id="rooms-list" class="space-y-4">
+                <!-- Room Item -->
+                <div class="room-row flex items-center gap-4 p-4 bg-white/50 rounded-2xl border border-gray-100">
+                    <div class="room-number w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold">1</div>
+                    <div class="flex-1 grid grid-cols-2 gap-4">
+                        <input type="text" name="room_name[]" placeholder="Nom (ex: Chambre Nord)" class="bg-transparent border-b border-gray-200 py-1 focus:border-indigo-500 outline-none text-sm">
+                        <input type="number" name="room_surface[]" placeholder="Surface (m²)" class="bg-transparent border-b border-gray-200 py-1 focus:border-indigo-500 outline-none text-sm">
+                    </div>
+                    <button type="button" onclick="removeRoom(this)" class="text-rose-400 hover:text-rose-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <button type="button" onclick="addRoom()" class="flex items-center gap-2 text-indigo-600 font-bold text-sm hover:underline">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Ajouter une chambre
+            </button>
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="nextStep(1)" class="text-gray-500 font-bold px-8 py-3">Retour</button>
+                <button type="button" onclick="nextStep(3)" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+                    Continuer
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Finance -->
+        <div id="step-3-content" class="setup-step hidden glass p-8 rounded-3xl space-y-8">
+            <h3 class="text-xl font-bold text-gray-900">Étape 3 : Finances & Calculs</h3>
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Loyer total mensuel (€)</label>
+                        <input type="number" placeholder="Ex: 1500" class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Charges estimées (€)</label>
+                        <input type="number" placeholder="Ex: 200" class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-sm font-bold text-gray-700">Mode de répartition des charges</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="split_mode" class="peer sr-only" checked>
+                            <div class="p-6 rounded-3xl border-2 border-gray-100 bg-white/50 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                                <p class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Parts égales</p>
+                                <p class="text-xs text-gray-500 mt-1">Les charges sont divisées équitablement entre tous les occupants.</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="split_mode" class="peer sr-only">
+                            <div class="p-6 rounded-3xl border-2 border-gray-100 bg-white/50 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 transition-all">
+                                <p class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Au prorata (Surface)</p>
+                                <p class="text-xs text-gray-500 mt-1">Les charges sont calculées selon la surface de chaque chambre.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-indigo-900 rounded-3xl text-white">
+                    <div class="flex items-start gap-4">
+                        <div class="p-2 bg-white/20 rounded-xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold">Astuce RentPilot</p>
+                            <p class="text-sm text-indigo-100 mt-1">Vous pourrez inviter vos locataires par email une fois la configuration terminée pour qu'ils rejoignent la plateforme.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-4">
+                <button type="button" onclick="nextStep(2)" class="text-gray-500 font-bold px-8 py-3">Retour</button>
+                <button type="submit" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all">
+                    Finaliser la configuration
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function nextStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.setup-step').forEach(s => s.classList.add('hidden'));
+        // Show target step
+        document.getElementById(`step-${step}-content`).classList.remove('hidden');
+
+        // Update Indicators
+        const indicators = document.querySelectorAll('.step-indicator');
+        indicators.forEach(ind => {
+            const indStep = parseInt(ind.dataset.step);
+            const circle = ind.querySelector('div');
+            const label = ind.querySelector('span');
+
+            if (indStep < step) {
+                // Completed
+                circle.classList.remove('border-gray-200', 'text-gray-400', 'border-indigo-600', 'text-indigo-600');
+                circle.classList.add('bg-indigo-600', 'border-indigo-600', 'text-white');
+                label.classList.add('text-indigo-600');
+                label.classList.remove('text-gray-400');
+            } else if (indStep === step) {
+                // Active
+                circle.classList.remove('bg-indigo-600', 'text-white', 'text-gray-400', 'border-gray-200');
+                circle.classList.add('border-indigo-600', 'text-indigo-600');
+                label.classList.add('text-indigo-600');
+                label.classList.remove('text-gray-400');
+            } else {
+                // Pending
+                circle.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600', 'text-indigo-600');
+                circle.classList.add('border-gray-200', 'text-gray-400');
+                label.classList.add('text-gray-400');
+                label.classList.remove('text-indigo-600');
+            }
+        });
+
+        // Update Progress Bar
+        const progress = ((step - 1) / 2) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function addRoom() {
+        const container = document.getElementById('rooms-list');
+        const roomCount = container.querySelectorAll('.room-row').length + 1;
+
+        const div = document.createElement('div');
+        div.className = 'room-row flex items-center gap-4 p-4 bg-white/50 rounded-2xl border border-gray-100';
+        div.innerHTML = `
+            <div class="room-number w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold">${roomCount}</div>
+            <div class="flex-1 grid grid-cols-2 gap-4">
+                <input type="text" name="room_name[]" placeholder="Nom (ex: Chambre Nord)" class="bg-transparent border-b border-gray-200 py-1 focus:border-indigo-500 outline-none text-sm">
+                <input type="number" name="room_surface[]" placeholder="Surface (m²)" class="bg-transparent border-b border-gray-200 py-1 focus:border-indigo-500 outline-none text-sm">
+            </div>
+            <button type="button" onclick="removeRoom(this)" class="text-rose-400 hover:text-rose-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        `;
+        container.appendChild(div);
+    }
+
+    function removeRoom(btn) {
+        const container = document.getElementById('rooms-list');
+        if (container.querySelectorAll('.room-row').length > 1) {
+            btn.closest('.room-row').remove();
+            // Renumber
+            container.querySelectorAll('.room-number').forEach((el, index) => {
+                el.textContent = index + 1;
+            });
+        } else {
+            alert("Il faut au moins une pièce.");
+        }
+    }
+</script>
+{% endblock %}
