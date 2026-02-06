@@ -5,3 +5,6 @@ flask_migrate
 psycopg2-binary
 python-dotenv
 werkzeug
+reportlab
+qrcode
+Pillow
