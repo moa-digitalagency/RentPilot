@@ -9,6 +9,10 @@ def index():
         return redirect(url_for('dashboard.dashboard'))
     return render_template('landing.html')
 
+@main_bp.route('/about')
+def about():
+    return render_template('about.html')
+
 @main_bp.route('/set_lang/<lang>')
 def set_lang(lang):
     if lang in ['fr', 'en']:

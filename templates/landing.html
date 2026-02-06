@@ -1,179 +1,171 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentPilot - La gestion locative nouvelle génération</title>
+{% extends "layout_public.html" %}
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% block title %}RentPilot - La gestion locative simplifiée{% endblock %}
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        indigo: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5' },
-                        emerald: { 500: '#10b981' },
-                        rose: { 500: '#f43f5e' }
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .glass-nav {
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .glass-card {
-            background-color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 font-['Inter'] text-gray-800">
+{% block content %}
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200">R</div>
-                    <span class="text-2xl font-bold text-gray-900 tracking-tight">RentPilot</span>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-indigo-600 font-medium transition">{{ _('landing.features') }}</a>
-                    <a href="#pricing" class="text-gray-600 hover:text-indigo-600 font-medium transition">{{ _('landing.pricing') }}</a>
-                    <a href="{{ url_for('auth.login') }}" class="text-gray-900 font-semibold hover:text-indigo-600 transition">{{ _('user.login') }}</a>
-                    <a href="{{ url_for('auth.register') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5">{{ _('landing.register') }}</a>
-                </div>
-                <!-- Mobile menu button placeholder -->
-                <div class="md:hidden flex items-center">
-                    <a href="{{ url_for('auth.login') }}" class="text-indigo-600 font-semibold">{{ _('user.login') }}</a>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-100 to-purple-100 opacity-70"></div>
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-indigo-300 blur-3xl opacity-30"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-pink-300 blur-3xl opacity-30"></div>
+    </div>
+
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Gérez votre colocation <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">sereinement</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto">
+            Fini les prises de tête pour les comptes. RentPilot centralise tout : loyers, factures, quittances et tickets de maintenance.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{{ url_for('auth.register') if 'auth.register' in url_for.__globals__ else '#' }}" class="px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1">
+                Commencer gratuitement
+            </a>
+            <a href="#features" class="px-8 py-4 rounded-xl bg-white text-gray-700 font-bold text-lg hover:bg-gray-50 border border-gray-200 transition-all shadow-sm">
+                Découvrir les fonctionnalités
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- About Snippet -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+            <div class="w-full md:w-1/2">
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-all duration-500">
+                     <!-- Placeholder image using a reliable source or just a colored div with text if no images allowed.
+                          I will use a nice gradient div placeholder since I cannot fetch external images easily without knowing valid urls. -->
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 aspect-video flex items-center justify-center text-white text-2xl font-bold">
+                        RentPilot UI
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div class="text-center max-w-3xl mx-auto relative z-10">
-                <div class="inline-block px-4 py-1.5 mb-6 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 font-semibold text-sm">
-                    {{ _('landing.hero_badge') }}
-                </div>
-                <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-8">
-                    {{ _('landing.hero_title')|safe }}
-                </h1>
-                <p class="text-xl text-gray-600 mb-10 leading-relaxed">
-                    {{ _('landing.hero_subtitle') }}
+            <div class="w-full md:w-1/2">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Les comptes entre colocs, c'est l'enfer ?</h2>
+                <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                    Qui a payé l'électricité ? Est-ce que le virement du loyer est passé ? Et ce robinet qui fuit depuis 3 semaines ?
+                    <br><br>
+                    La gestion locative traditionnelle manque de transparence et de simplicité. RentPilot a été créé pour résoudre ces frictions quotidiennes entre propriétaires et locataires.
                 </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="{{ url_for('auth.register') }}" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-indigo-200 transition transform hover:-translate-y-1 text-lg">
-                        {{ _('landing.start_free') }}
-                    </a>
-                    <a href="#demo" class="w-full sm:w-auto px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-2xl border border-gray-200 shadow-lg transition text-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        {{ _('landing.demo') }}
-                    </a>
-                </div>
+                <a href="{{ url_for('main.about') }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
+                    En savoir plus sur notre mission
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
             </div>
-
-            <!-- Abstract Shapes -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-200/30 rounded-full blur-3xl -z-10 animate-pulse"></div>
-            <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-200/30 rounded-full blur-3xl -z-10"></div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-24 bg-white/50 backdrop-blur-sm relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Tout ce dont vous avez besoin</h2>
-                <p class="text-gray-500 text-lg">Une plateforme unique pour gérer toutes vos locations.</p>
+<!-- Features Grid -->
+<section id="features" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900">Tout ce dont vous avez besoin</h2>
+            <p class="text-gray-500 mt-2">Une suite complète d'outils pour propriétaires et locataires.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-6">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Gestion Loyer</h3>
+                <p class="text-gray-500">Suivi automatique des paiements et génération de quittances en un clic.</p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="glass-card p-8 rounded-3xl hover:shadow-xl transition duration-300">
-                    <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 text-indigo-600">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <!-- Feature 2 -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Chat Intégré</h3>
+                <p class="text-gray-500">Communiquez facilement par logement sans mélanger avec vos messages personnels.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center text-pink-600 mb-6">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Reçus QR</h3>
+                <p class="text-gray-500">Vérifiez l'authenticité de chaque transaction grâce à notre système de QR code unique.</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mb-6">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Maintenance</h3>
+                <p class="text-gray-500">Déclarez les incidents, suivez les réparations et gérez les intervenants.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-16">Ils nous font confiance</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="bg-gray-50 p-8 rounded-2xl relative">
+                <div class="text-indigo-400 text-6xl absolute top-4 left-4 font-serif opacity-20">"</div>
+                <p class="text-gray-600 mb-6 relative z-10 italic">Enfin une app qui met tout le monde d'accord. Je reçois mes quittances instantanément.</p>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-indigo-200 rounded-full flex items-center justify-center font-bold text-indigo-700 mr-3">T</div>
+                    <div>
+                        <div class="font-bold text-gray-900">Thomas</div>
+                        <div class="text-sm text-gray-500">Locataire</div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Pour les Bailleurs</h3>
-                    <p class="text-gray-600 leading-relaxed">Suivi des loyers en temps réel, génération automatique des quittances et gestion des tickets d'incidents.</p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="glass-card p-8 rounded-3xl hover:shadow-xl transition duration-300">
-                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 text-emerald-600">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+             <!-- Testimonial 2 -->
+             <div class="bg-gray-50 p-8 rounded-2xl relative">
+                <div class="text-indigo-400 text-6xl absolute top-4 left-4 font-serif opacity-20">"</div>
+                <p class="text-gray-600 mb-6 relative z-10 italic">La gestion des charges était un cauchemar. Avec RentPilot, tout est calculé automatiquement.</p>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center font-bold text-purple-700 mr-3">S</div>
+                    <div>
+                        <div class="font-bold text-gray-900">Sophie</div>
+                        <div class="text-sm text-gray-500">Propriétaire</div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Pour les Colocs</h3>
-                    <p class="text-gray-600 leading-relaxed">Répartition équitable des charges, paiement simplifié et espace de discussion dédié à la colocation.</p>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="glass-card p-8 rounded-3xl hover:shadow-xl transition duration-300">
-                    <div class="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center mb-6 text-rose-600">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+             <!-- Testimonial 3 -->
+             <div class="bg-gray-50 p-8 rounded-2xl relative">
+                <div class="text-indigo-400 text-6xl absolute top-4 left-4 font-serif opacity-20">"</div>
+                <p class="text-gray-600 mb-6 relative z-10 italic">Le chat dédié est génial pour garder une trace des échanges importants sans spammer WhatsApp.</p>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-pink-200 rounded-full flex items-center justify-center font-bold text-pink-700 mr-3">L</div>
+                    <div>
+                        <div class="font-bold text-gray-900">Lucas</div>
+                        <div class="text-sm text-gray-500">Colocataire</div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Automatisé & Sécurisé</h3>
-                    <p class="text-gray-600 leading-relaxed">Notifications automatiques, documents stockés en toute sécurité et conformité RGPD intégrée.</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Pricing -->
-    <section id="pricing" class="py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Tarification simple</h2>
-                <p class="text-gray-500">Commencez gratuitement, évoluez selon vos besoins.</p>
-            </div>
+<!-- Contact / WhatsApp -->
+<section class="py-20 bg-indigo-600 text-white overflow-hidden relative">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InB1cnBsZSIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3N2Zz4=')] opacity-20"></div>
+    <div class="container mx-auto px-4 text-center relative z-10">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Une question ?</h2>
+        <p class="text-indigo-100 text-xl mb-10 max-w-2xl mx-auto">
+            Notre équipe est disponible pour vous aider à configurer votre espace.
+        </p>
+        <a href="https://wa.me/{{ site_settings.whatsapp_contact_number or '' }}" target="_blank" class="inline-flex items-center px-8 py-4 rounded-xl bg-white text-indigo-600 font-bold text-lg hover:bg-gray-100 transition-all shadow-lg">
+            <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            Discuter sur WhatsApp
+        </a>
+    </div>
+</section>
 
-            <div class="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-8 max-w-4xl mx-auto">
-                <!-- Free Tier -->
-                <div class="w-full md:w-1/2 glass-card p-8 rounded-3xl border border-white/50">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Découverte</h3>
-                    <div class="text-4xl font-extrabold text-gray-900 mb-6">0€ <span class="text-lg font-medium text-gray-500">/mois</span></div>
-                    <ul class="space-y-4 mb-8 text-gray-600">
-                        <li class="flex items-center"><svg class="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 1 bien immobilier</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Jusqu'à 3 locataires</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Gestion des tickets de base</li>
-                    </ul>
-                    <a href="{{ url_for('auth.register') }}" class="block w-full py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-center rounded-xl transition">Créer un compte</a>
-                </div>
-
-                <!-- Pro Tier -->
-                <div class="w-full md:w-1/2 glass-card p-8 rounded-3xl border-2 border-indigo-500 relative transform md:-translate-y-4 shadow-2xl">
-                    <div class="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">POPULAIRE</div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
-                    <div class="text-4xl font-extrabold text-gray-900 mb-6">19€ <span class="text-lg font-medium text-gray-500">/mois</span></div>
-                    <ul class="space-y-4 mb-8 text-gray-600">
-                        <li class="flex items-center"><svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Biens illimités</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Locataires illimités</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Automatisation des loyers</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Support prioritaire</li>
-                    </ul>
-                    <a href="{{ url_for('auth.register') }}" class="block w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-center rounded-xl transition shadow-lg shadow-indigo-200">Essayer gratuitement</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-white/50 backdrop-blur-md py-12 border-t border-white/20">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500">
-            <p>&copy; 2023 RentPilot. {{ _('footer.rights') }}</p>
-        </div>
-    </footer>
-
-</body>
-</html>
+{% endblock %}
