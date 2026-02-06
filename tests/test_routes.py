@@ -59,12 +59,12 @@ class TestRoutes(unittest.TestCase):
         resp = self.client.get('/verify/receipt/TRX-TEST-123')
         self.assertEqual(resp.status_code, 200)
         # Check for content in public_verification.html
-        self.assertIn(b"Valide", resp.data)
+        self.assertIn(b"Certificat Authentique", resp.data)
 
         # Test Invalid
         resp = self.client.get('/verify/receipt/INVALID')
         self.assertEqual(resp.status_code, 200)
-        self.assertIn(b"Invalide", resp.data)
+        self.assertIn(b"Ticket Invalide", resp.data)
 
     def test_establishment_setup_post(self):
         self.login()

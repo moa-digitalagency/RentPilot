@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RentPilot{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: {{ site_settings.primary_color_hex or '#4f46e5' }};
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary-color)',
+                        indigo: {
+                            50: '#eef2ff',
+                            500: '#6366f1',
+                            600: 'var(--primary-color)',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                        },
+                        rose: {
+                            500: '#f43f5e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50 text-gray-800 antialiased font-['Inter'] min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">R</div>
+                        <span class="text-xl font-bold text-gray-900 tracking-tight">RentPilot</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Accueil</a>
+                    <a href="{{ url_for('main.about') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">À propos</a>
+                    <!-- Verification is usually via QR code, but maybe a direct link if needed, usually hidden from nav unless specifically asked. User didn't ask for it in Nav, but public_verification page exists. -->
+
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard.dashboard') }}" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                            Mon Tableau de Bord
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                            Connexion
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button (Simplified) -->
+                <div class="md:hidden flex items-center">
+                    <a href="{{ url_for('auth.login') }}" class="text-indigo-600 font-medium">Connexion</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-16">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/50 backdrop-blur-md border-t border-white/20 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-500 text-sm">&copy; {{ now.year if now else '2024' }} RentPilot. Tous droits réservés.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">Mentions Légales</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">Confidentialité</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
