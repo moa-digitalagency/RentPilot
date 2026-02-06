@@ -11,5 +11,10 @@ class Config:
     basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or os.path.join(basedir, 'statics', 'uploads')
+    UPLOAD_FOLDER_CHAT = os.environ.get('UPLOAD_FOLDER_CHAT') or os.path.join(basedir, 'statics', 'uploads', 'chat')
+
+    # Super Admin (Env variables)
+    SUPER_ADMIN_ID = os.environ.get('SUPER_ADMIN_ID') or 'admin@rentpilot.com'
+    SUPER_ADMIN_PASS = os.environ.get('SUPER_ADMIN_PASS') or 'SuperSecretPass123!'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

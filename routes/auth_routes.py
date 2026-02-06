@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required
 from models.users import User, UserRole
 from config.extensions import db
 from security.pwd_tools import check_password, hash_password
+from security.auth import authenticate_and_login_user
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -11,10 +12,10 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
 
-        if user and check_password(user.password_hash, password):
-            login_user(user)
+        success, role = authenticate_and_login_user(email, password)
+
+        if success:
             return redirect(url_for('dashboard.dashboard'))
         else:
             flash('Invalid email or password', 'error')
@@ -49,7 +50,7 @@ def register():
     return render_template('auth/register.html')
 
 @auth_bp.route('/logout')
-@login_required
 def logout():
     logout_user()
+    session.pop('is_super_admin', None)
     return redirect(url_for('auth.login'))
