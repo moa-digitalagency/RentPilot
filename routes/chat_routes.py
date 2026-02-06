@@ -7,6 +7,12 @@ from datetime import datetime
 
 chat_bp = Blueprint('chat', __name__)
 
+@chat_bp.route('/chat')
+@login_required
+def index():
+    # In a real scenario, fetch available rooms for the user
+    return render_template('chat.html')
+
 @chat_bp.route('/chat/<int:room_id>', methods=['GET'])
 @login_required
 def view_chat(room_id):

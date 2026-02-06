@@ -8,11 +8,17 @@ from datetime import datetime
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-@dashboard_bp.route('/')
 @dashboard_bp.route('/dashboard')
 @login_required
 def dashboard():
     context = {}
+    context['now_date'] = datetime.now().strftime('%d/%m/%Y')
+    context['now_month'] = datetime.now().strftime('%m')
+
+    # Simple logic to get previous month
+    prev_month = datetime.now().month - 1
+    if prev_month == 0: prev_month = 12
+    context['now_month_prev'] = f"{prev_month:02d}"
 
     if current_user.role == UserRole.BAILLEUR:
         # Bailleur logic
@@ -78,4 +84,4 @@ def dashboard():
     elif current_user.role == UserRole.ADMIN:
          context = {'role': 'Admin'}
 
-    return render_template('dashboard/index.html', **context)
+    return render_template('dashboard.html', **context)
