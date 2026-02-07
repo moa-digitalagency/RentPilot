@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from config.init_app import create_app
 from config.extensions import db
-from models.establishment import Establishment, SaaSBilledTo
+from models.establishment import Establishment, SaaSBilledTo, EstablishmentOwner, EstablishmentOwnerRole
 from models.finance import SaaSInvoice, Invoice, ExpenseType, SaaSInvoiceStatus, PaymentMethod
 from models.saas_config import SubscriptionPlan, PlatformSettings
 from models.users import User, UserRole
@@ -87,11 +87,14 @@ class TestServices(unittest.TestCase):
     def test_billing_service_landlord(self):
         # Create Establishment
         est = Establishment(
-            landlord_id=self.user.id, address="Test",
+            address="Test",
             saas_billed_to=SaaSBilledTo.LANDLORD,
             subscription_plan_id=self.plan.id
         )
         db.session.add(est)
+        db.session.commit()
+        owner = EstablishmentOwner(user_id=self.user.id, establishment_id=est.id, role=EstablishmentOwnerRole.PRIMARY)
+        db.session.add(owner)
         db.session.commit()
 
         # Generate
@@ -110,11 +113,14 @@ class TestServices(unittest.TestCase):
     def test_billing_service_tenant(self):
         # Create Establishment
         est = Establishment(
-            landlord_id=self.user.id, address="Test2",
+            address="Test2",
             saas_billed_to=SaaSBilledTo.TENANTS,
             subscription_plan_id=self.plan.id
         )
         db.session.add(est)
+        db.session.commit()
+        owner = EstablishmentOwner(user_id=self.user.id, establishment_id=est.id, role=EstablishmentOwnerRole.PRIMARY)
+        db.session.add(owner)
         db.session.commit()
 
         # Generate
@@ -132,10 +138,13 @@ class TestServices(unittest.TestCase):
 
     def test_offline_payment(self):
         est = Establishment(
-            landlord_id=self.user.id, address="Test3",
+            address="Test3",
             subscription_plan_id=self.plan.id
         )
         db.session.add(est)
+        db.session.commit()
+        owner = EstablishmentOwner(user_id=self.user.id, establishment_id=est.id, role=EstablishmentOwnerRole.PRIMARY)
+        db.session.add(owner)
         db.session.commit()
         BillingService.generate_monthly_invoices()
         saas_inv = SaaSInvoice.query.filter_by(establishment_id=est.id).first()

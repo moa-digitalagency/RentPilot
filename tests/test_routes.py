@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from config.init_app import create_app
 from config.extensions import db
-from models.establishment import Establishment, FinancialMode
+from models.establishment import Establishment, FinancialMode, EstablishmentOwner, EstablishmentOwnerRole
 from models.users import User, UserRole
 from models.finance import Transaction, SaaSInvoice
 from models.communication import Message, ChatRoom, MessageType, ChannelType
@@ -78,7 +78,7 @@ class TestRoutes(unittest.TestCase):
         resp = self.client.post('/establishment/setup', data=data, follow_redirects=True)
         self.assertEqual(resp.status_code, 200)
 
-        est = Establishment.query.filter_by(landlord_id=self.user.id).first()
+        est = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == self.user.id).first()
         self.assertIsNotNone(est)
         self.assertEqual(est.address, 'New Address')
         self.assertEqual(est.config_financial_mode, FinancialMode.INEGAL)
@@ -88,8 +88,12 @@ class TestRoutes(unittest.TestCase):
         self.login()
 
         # Create Est
-        est = Establishment(landlord_id=self.user.id, address="Chat Est")
+        est = Establishment(address="Chat Est")
         db.session.add(est)
+        db.session.commit()
+
+        owner = EstablishmentOwner(user_id=self.user.id, establishment_id=est.id, role=EstablishmentOwnerRole.PRIMARY)
+        db.session.add(owner)
         db.session.commit()
 
         # Create Room

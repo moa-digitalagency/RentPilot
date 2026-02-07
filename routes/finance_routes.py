@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from security.auth import bailleur_required, tenant_required
 from models.users import UserRole
 from models.finance import Invoice, Transaction, PaymentProof, ExpenseType, ValidationStatus
-from models.establishment import Lease, Establishment
+from models.establishment import Lease, Establishment, EstablishmentOwner
 from config.extensions import db
 from services.upload_service import UploadService
 from services.pdf_service import PDFService
@@ -18,7 +18,7 @@ def dashboard():
     context = {}
     if current_user.role == UserRole.BAILLEUR:
         # Get pending transactions for landlord's establishments
-        establishments = Establishment.query.filter_by(landlord_id=current_user.id).all()
+        establishments = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == current_user.id).all()
         est_ids = [e.id for e in establishments]
 
         # Join Transaction -> Invoice -> Establishment

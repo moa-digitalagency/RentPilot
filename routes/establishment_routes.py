@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
 from flask_login import login_required, current_user
 from security.auth import bailleur_required
-from models.establishment import Establishment, Room, Lease, FinancialMode
+from models.establishment import Establishment, Room, Lease, FinancialMode, EstablishmentOwner, EstablishmentOwnerRole
 from models.users import User
 from config.extensions import db
 from datetime import datetime
@@ -21,13 +21,20 @@ def create_establishment():
         mode = FinancialMode.EGAL if mode_val == 'Egal' else FinancialMode.INEGAL
 
         est = Establishment(
-            landlord_id=current_user.id,
             address=address,
             wifi_cost=wifi_cost,
             syndic_cost=syndic_cost,
             config_financial_mode=mode
         )
         db.session.add(est)
+        db.session.commit()
+
+        owner = EstablishmentOwner(
+            user_id=current_user.id,
+            establishment_id=est.id,
+            role=EstablishmentOwnerRole.PRIMARY
+        )
+        db.session.add(owner)
         db.session.commit()
         flash('Establishment created', 'success')
         return redirect(url_for('dashboard.dashboard'))
@@ -39,7 +46,8 @@ def create_establishment():
 @bailleur_required
 def update_establishment(id):
     est = Establishment.query.get_or_404(id)
-    if est.landlord_id != current_user.id:
+    owner = EstablishmentOwner.query.filter_by(user_id=current_user.id, establishment_id=est.id).first()
+    if not owner:
         abort(403)
 
     if request.method == 'POST':
@@ -61,7 +69,8 @@ def update_establishment(id):
 @bailleur_required
 def add_room(id):
     est = Establishment.query.get_or_404(id)
-    if est.landlord_id != current_user.id:
+    owner = EstablishmentOwner.query.filter_by(user_id=current_user.id, establishment_id=est.id).first()
+    if not owner:
         abort(403)
 
     name = request.form.get('name')
@@ -79,7 +88,8 @@ def add_room(id):
 @bailleur_required
 def assign_tenant(id):
     est = Establishment.query.get_or_404(id)
-    if est.landlord_id != current_user.id:
+    owner = EstablishmentOwner.query.filter_by(user_id=current_user.id, establishment_id=est.id).first()
+    if not owner:
         abort(403)
 
     room_id = request.form.get('room_id')
@@ -124,15 +134,22 @@ def setup():
             data = request.form.to_dict()
             data['custom_expenses'] = request.form.getlist('custom_expenses')
 
-        est = Establishment.query.filter_by(landlord_id=current_user.id).first()
+        est = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == current_user.id).first()
 
         address = data.get('address')
         if not est:
             est = Establishment(
-                landlord_id=current_user.id,
                 address=address if address else 'Adresse Inconnue'
             )
             db.session.add(est)
+            db.session.commit()
+
+            owner = EstablishmentOwner(
+                user_id=current_user.id,
+                establishment_id=est.id,
+                role=EstablishmentOwnerRole.PRIMARY
+            )
+            db.session.add(owner)
 
         # Update fields
         custom_expenses = data.get('custom_expenses')

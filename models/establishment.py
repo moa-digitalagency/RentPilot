@@ -10,11 +10,26 @@ class SaaSBilledTo(enum.Enum):
     LANDLORD = 'Landlord'
     TENANTS = 'Tenants'
 
+class EstablishmentOwnerRole(enum.Enum):
+    PRIMARY = 'Primary'
+    SECONDARY = 'Secondary'
+
+class EstablishmentOwner(db.Model):
+    __tablename__ = 'establishment_owners'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    establishment_id = db.Column(db.Integer, db.ForeignKey('establishments.id'), primary_key=True)
+    role = db.Column(SQLAlchemyEnum(EstablishmentOwnerRole), default=EstablishmentOwnerRole.SECONDARY, nullable=False)
+
+    # Relationships
+    user = db.relationship('User', back_populates='establishment_associations')
+    establishment = db.relationship('Establishment', back_populates='owner_associations')
+
 class Establishment(db.Model):
     __tablename__ = 'establishments'
 
     id = db.Column(db.Integer, primary_key=True)
-    landlord_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    # landlord_id removed as per request
     address = db.Column(db.String(255), nullable=False)
     # Fuzzy location (approximate location within 200m)
     fuzzy_location = db.Column(db.String(255), nullable=True)
@@ -31,8 +46,9 @@ class Establishment(db.Model):
     # Relationships
     subscription_plan = db.relationship('SubscriptionPlan', backref='establishments')
     rooms = db.relationship('Room', backref='establishment', lazy=True)
-    # expenses relationship will be defined in finance.py via backref or we can define it here if possible.
-    # Usually backref in Expense is enough.
+
+    # New relationship for owners
+    owner_associations = db.relationship('EstablishmentOwner', back_populates='establishment', cascade='all, delete-orphan')
 
     def get_active_expenses(self):
         """Returns the list of active expenses."""
