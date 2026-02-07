@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Responsive Table Demo{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-in">
+    <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-lg hover:bg-indigo-700 transition-colors">Add User</button>
+    </div>
+
+    <!-- Responsive Table Component -->
+    <!--
+        Strategy: Card Stack Approach (Option A)
+
+        Mobile (< 768px):
+        - THEAD is hidden.
+        - TR becomes a block element (card) with separate styling.
+        - TD becomes a flex container.
+        - The column label is injected via CSS ::before pseudo-element using the data-label attribute.
+
+        Desktop (>= 768px):
+        - Standard table layout.
+    -->
+    <div class="w-full overflow-hidden md:overflow-visible rounded-2xl border border-gray-200 shadow-sm bg-white md:bg-transparent md:border-0 md:shadow-none">
+        <table class="w-full text-left text-sm text-gray-600 border-collapse">
+
+            <!-- Desktop Header -->
+            <thead class="hidden md:table-header-group bg-gray-50/90 backdrop-blur-sm text-xs uppercase font-medium text-gray-500 sticky top-0 z-10 shadow-sm">
+                <tr>
+                    <th class="px-6 py-4 rounded-tl-xl md:rounded-none">ID</th>
+                    <th class="px-6 py-4">Name</th>
+                    <th class="px-6 py-4">Email</th>
+                    <th class="px-6 py-4">Role</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4 text-right rounded-tr-xl md:rounded-none">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody class="block md:table-row-group space-y-4 md:space-y-0 p-4 md:p-0 bg-gray-50 md:bg-transparent">
+                {% for user in users %}
+                <tr class="block md:table-row bg-white md:bg-white border border-gray-200 md:border-b md:border-gray-100 rounded-xl md:rounded-none shadow-sm md:shadow-none transition-colors hover:bg-indigo-50/30">
+
+                    <!-- ID -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-0 flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="ID">
+                        <span class="font-medium text-gray-900">#{{ user.id }}</span>
+                    </td>
+
+                    <!-- Name -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-0 flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="Name">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">{{ user.name[0] }}</div>
+                            <span class="font-medium text-gray-900">{{ user.name }}</span>
+                        </div>
+                    </td>
+
+                    <!-- Email -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-0 flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="Email">
+                        <span class="truncate max-w-[200px]">{{ user.email }}</span>
+                    </td>
+
+                    <!-- Role -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-0 flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="Role">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            {% if user.role == 'Admin' %} bg-purple-100 text-purple-800
+                            {% elif user.role == 'Landlord' %} bg-blue-100 text-blue-800
+                            {% else %} bg-gray-100 text-gray-800 {% endif %}">
+                            {{ user.role }}
+                        </span>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-0 flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="Status">
+                        <span class="inline-flex items-center gap-1.5">
+                            <span class="h-1.5 w-1.5 rounded-full
+                                {% if user.status == 'Active' %} bg-emerald-500
+                                {% elif user.status == 'Inactive' %} bg-gray-400
+                                {% else %} bg-amber-500 {% endif %}"></span>
+                            {{ user.status }}
+                        </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="block md:table-cell px-4 py-3 md:px-6 md:py-4 md:text-right flex justify-between items-center md:table-cell before:content-[attr(data-label)] before:font-bold before:text-gray-700 md:before:content-none" data-label="Actions">
+                        <div class="flex gap-2 md:justify-end">
+                            <button class="text-indigo-600 hover:text-indigo-900 font-medium text-sm">Edit</button>
+                            <button class="text-rose-600 hover:text-rose-900 font-medium text-sm">Delete</button>
+                        </div>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Explanation Section -->
+    <div class="mt-8 p-6 glass rounded-2xl border-l-4 border-indigo-500">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Technical Implementation</h3>
+        <p class="text-gray-600 mb-4">This table demonstrates the <strong>"Card Stack"</strong> approach for responsive data tables.</p>
+        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+            <li><strong>Desktop View:</strong> Renders as a standard table using <code>display: table</code> properties.</li>
+            <li><strong>Mobile View:</strong>
+                <ul class="list-circle pl-5 mt-1 space-y-1">
+                    <li>The <code>thead</code> is hidden.</li>
+                    <li>Each <code>tr</code> is converted to a block-level card with rounded corners and shadows.</li>
+                    <li>Each <code>td</code> uses <code>display: flex</code> to align content.</li>
+                    <li><strong>Key Feature:</strong> The column label is dynamically inserted using the CSS pseudo-element <code>::before</code> and the <code>attr(data-label)</code> value, eliminating the need for duplicate HTML content.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
