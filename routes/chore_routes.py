@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Routes for chore module.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from flask import Blueprint, jsonify, request, abort, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models.users import UserRole

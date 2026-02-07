@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Source file: __init__.py
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from .users import User, UserRole
 from .establishment import Establishment, Room, Lease, FinancialMode, SaaSBilledTo, EstablishmentOwner, EstablishmentOwnerRole
 from .finance import Invoice, Transaction, PaymentProof, ExpenseType, ValidationStatus, SaaSInvoice, SaaSInvoiceStatus, PaymentMethod

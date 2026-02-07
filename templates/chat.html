@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for chat page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "base.html" %}
 
 {% block title %}Chat - RentPilot{% endblock %}
@@ -143,7 +151,8 @@
 
             <!-- Input Area -->
             <div class="p-4 bg-white/60 border-t border-white/30 backdrop-blur-lg">
-                <form id="chat-form" class="flex flex-wrap items-end gap-2" enctype="multipart/form-data">
+                <form id="chat-form" {% if chat_room %}action="{{ url_for('chat.send_message', room_id=chat_room.id) }}" method="POST"{% endif %} class="flex flex-wrap items-end gap-2" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <!-- File Upload -->
                     <div class="relative group">
                         <input type="file" id="image-upload" name="image" accept="image/*" class="hidden" onchange="handleImageSelect(this)">
@@ -354,11 +363,12 @@
     });
 
     function markMessageAsRead(msgId) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         fetch(`/chat/read/${msgId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Add CSRF token if needed, usually flask-wtf handles it or cookies
+                'X-CSRFToken': csrfToken
             }
         }).then(response => {
             if (response.ok) {

@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for chores page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "base.html" %}
 
 {% block title %}Tâches & Planning - RentPilot{% endblock %}
@@ -171,9 +179,13 @@
 
     async function validateTask(eventId) {
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch(`/chores/${eventId}/confirm`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
             });
 
             if (response.ok) {
@@ -204,9 +216,13 @@
 
     async function markTaskDone(eventId) {
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch(`/chores/${eventId}/done`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
             });
             if (response.ok) {
                 confetti({ particleCount: 50, spread: 45, origin: { y: 0.7 } });
@@ -233,11 +249,15 @@
         const data = Object.fromEntries(formData.entries());
         data.is_rotating = formData.get('is_rotating') === 'on';
         data.frequency_days = parseInt(data.frequency_days);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         try {
             const response = await fetch('{{ url_for("chore.create_chore_type") }}', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify(data)
             });
             if (response.ok) {

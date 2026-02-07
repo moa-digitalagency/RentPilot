@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for establishment_setup page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "base.html" %}
 
 {% block title %}Configuration Colocation - RentPilot{% endblock %}
@@ -316,10 +324,12 @@
 
         // Send JSON
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const response = await fetch('{{ url_for("establishment.setup") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify(data)
             });

@@ -1,4 +1,14 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Source file: auth.py
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from functools import wraps
+import hmac
+import os
 from flask import abort, session, current_app
 from flask_login import current_user, login_user
 from config.extensions import login_manager
@@ -16,13 +26,19 @@ def authenticate_and_login_user(email, password):
     sa_id = current_app.config.get('SUPER_ADMIN_ID')
     sa_pass = current_app.config.get('SUPER_ADMIN_PASS')
 
-    if email == sa_id and password == sa_pass:
-        session.clear() # Clear any previous session
-        session['is_super_admin'] = True
-        return True, 'SuperAdmin'
+    # Security Fix: Ensure credentials are set and perform constant-time comparison
+    if sa_id and sa_pass and email and password:
+        # Prevent login with defaults in production if possible (optional hardening)
+        # Using hmac.compare_digest to prevent timing attacks
+        if hmac.compare_digest(email, sa_id) and hmac.compare_digest(password, sa_pass):
+            session.clear() # Clear any previous session
+            session.permanent = True # Ensure session expires
+            session['is_super_admin'] = True
+            return True, 'SuperAdmin'
 
     # 2. Check Database User
     from models.users import User
+    # Security: Use filter_by which uses parameterized queries (SQLAlchemy default)
     user = User.query.filter_by(email=email).first()
 
     if user and check_password(user.password_hash, password):
@@ -42,7 +58,10 @@ def super_admin_required(f):
 @login_manager.user_loader
 def load_user(user_id):
     from models.users import User
-    return User.query.get(int(user_id))
+    try:
+        return User.query.get(int(user_id))
+    except (ValueError, TypeError):
+        return None
 
 def bailleur_required(f):
     @wraps(f)

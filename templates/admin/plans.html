@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for plans page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "admin/layout_admin.html" %}
 
 {% block title %}Plans - Admin RentPilot{% endblock %}
@@ -54,6 +62,7 @@
         </div>
 
         <form action="{{ url_for('super_admin.manage_plans') }}" method="POST" class="p-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="plan_id" id="plan_id">
 
             <div class="space-y-4">

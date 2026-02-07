@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for subscription page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "base.html" %}
 
 {% block title %}Mon Abonnement - RentPilot{% endblock %}
@@ -98,6 +106,7 @@
             </div>
 
             <form action="{{ url_for('finance.upload_saas_proof') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="invoice_id" id="form-invoice-id">
 
                 <label class="block text-sm font-medium text-gray-700 mb-2">Preuve de virement (PDF, JPG, PNG)</label>

@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for settings page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "admin/layout_admin.html" %}
 
 {% block title %}Paramètres - Admin RentPilot{% endblock %}
@@ -8,6 +16,7 @@
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ url_for('super_admin.update_settings') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <!-- Branding -->
             <section>
@@ -157,6 +166,7 @@
     <!-- Receipt Settings -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-8" id="receipt-settings">
         <form action="{{ url_for('super_admin.update_receipt_settings') }}" method="POST" class="p-6 space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <section>
                  <h2 class="text-lg font-semibold text-indigo-600 border-b border-indigo-100 pb-2 mb-4">🧾 Configuration Reçus</h2>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
