@@ -12,6 +12,10 @@ from models.establishment import Room
 from datetime import datetime
 
 class PDFService:
+
+    # CSS for Thermal Printing (if HTML generation is used in future)
+    THERMAL_CSS = "@page { size: 80mm auto; margin: 0; }"
+
     @staticmethod
     def generate_receipt_pdf(transaction, output_buffer: io.BytesIO = None) -> io.BytesIO:
         """
