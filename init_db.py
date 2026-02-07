@@ -24,11 +24,16 @@ def init_db():
         # Seed Platform Settings
         if not PlatformSettings.query.first():
             settings = PlatformSettings(
-                receipt_format=ReceiptFormat.A4_Standard
+                receipt_format=ReceiptFormat.A4_Standard,
+                whatsapp_contact_number="+33612345678",
+                footer_text="Bienvenue sur RentPilot, la solution moderne pour gérer vos biens.",
+                copyright_text="© 2024 RentPilot Demo. Tous droits réservés.",
+                social_media_config={"facebook": "https://facebook.com/rentpilot", "twitter": "https://twitter.com/rentpilot"},
+                footer_links=[{"label": "Mentions Légales", "url": "/legal"}, {"label": "Support", "url": "/support"}]
             )
             db.session.add(settings)
             db.session.commit()
-            print("Initialized Platform Settings.")
+            print("Initialized Platform Settings with V4 defaults.")
 
         # Seed Subscription Plans
         if not SubscriptionPlan.query.first():

@@ -42,13 +42,21 @@
                         </div>
                         <div class="ml-4 bg-white px-3 py-1 rounded text-xs text-gray-400 w-64 border border-gray-200">rentpilot.app/dashboard</div>
                     </div>
-                    <!-- Placeholder for dashboard image -->
-                    <div class="bg-gray-50 aspect-[16/9] flex items-center justify-center text-gray-400">
-                        <div class="text-center">
-                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
-                            <span class="font-medium">Dashboard Interface</span>
+
+                    {% if site_settings and site_settings.landing_hero_background_url %}
+                        <!-- Custom Uploaded Hero Image -->
+                        <div class="bg-gray-50 aspect-[16/9] w-full relative">
+                            <img src="{{ site_settings.landing_hero_background_url }}" alt="Dashboard Interface" class="absolute inset-0 w-full h-full object-cover">
                         </div>
-                    </div>
+                    {% else %}
+                        <!-- Default Placeholder -->
+                        <div class="bg-gray-50 aspect-[16/9] flex items-center justify-center text-gray-400">
+                            <div class="text-center">
+                                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                                <span class="font-medium">Dashboard Interface</span>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -386,7 +394,10 @@
                         </div>
                         <div class="ml-4">
                             <h4 class="text-lg font-bold text-gray-900">WhatsApp</h4>
-                            <a href="https://wa.me/{{ site_settings.whatsapp_contact_number }}" target="_blank" class="text-indigo-600 hover:underline">Discuter maintenant</a>
+                            <p class="text-gray-500">Contact direct</p>
+                            <button type="button" onclick="sendToWhatsapp()" class="text-indigo-600 hover:underline text-sm font-semibold">
+                                Envoyer le formulaire via WhatsApp
+                            </button>
                         </div>
                     </div>
                     {% endif %}
@@ -395,10 +406,10 @@
 
             <!-- Contact Form -->
             <div class="glass-card bg-white p-8 rounded-3xl shadow-xl">
-                <form action="{{ url_for('public.contact_submit') }}" method="POST" class="space-y-6">
+                <form id="contact-form" action="{{ url_for('public.contact_submit') }}" method="POST" class="space-y-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('landing.contact_name') }}</label>
-                        <input type="text" name="name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                        <input type="text" name="name" id="contact-name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('landing.contact_email') }}</label>
@@ -410,11 +421,20 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('landing.contact_message') }}</label>
-                        <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
+                        <textarea name="message" id="contact-message" rows="4" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
                     </div>
-                    <button type="submit" class="w-full py-4 text-white font-bold bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all">
-                        {{ _('landing.contact_btn') }}
-                    </button>
+
+                    <div class="flex flex-col gap-3">
+                        <button type="submit" class="w-full py-4 text-white font-bold bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all">
+                            {{ _('landing.contact_btn') }}
+                        </button>
+                        {% if site_settings and site_settings.whatsapp_contact_number %}
+                        <button type="button" onclick="sendToWhatsapp()" class="w-full py-3 text-indigo-700 font-bold bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200 transition-all flex items-center justify-center gap-2">
+                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.664-.698c.965.526 1.775.795 2.796.795 3.181 0 5.767-2.587 5.767-5.766.001-3.182-2.585-5.767-5.767-5.767zm0 13.891c-4.471 0-8.126-3.655-8.126-8.125s3.655-8.125 8.126-8.125c4.47 0 8.125 3.655 8.125 8.125s-3.655 8.125-8.125 8.125zm7.394-11.465c-.26-.144-1.536-.757-1.774-.843-.237-.086-.409-.129-.582.129-.172.257-.667.843-.817 1.015-.15.172-.299.193-.559.064-.26-.129-1.096-.404-2.088-1.288-.772-.689-1.294-1.539-1.444-1.797-.151-.258-.016-.398.113-.527.118-.117.26-.301.39-.451.129-.151.172-.257.258-.429.086-.172.043-.322-.022-.451-.064-.129-.582-1.402-.796-1.921-.208-.506-.419-.437-.582-.445h-.494c-.172 0-.451.064-.688.322-.236.257-.902.881-.902 2.149 0 1.268.924 2.493 1.053 2.665.129.172 1.819 2.776 4.407 3.892.616.266 1.096.425 1.47.544.619.197 1.182.169 1.629.102.497-.074 1.536-.628 1.751-1.233.216-.606.216-1.125.151-1.234-.065-.108-.237-.172-.497-.301z"/></svg>
+                            Envoyer via WhatsApp
+                        </button>
+                        {% endif %}
+                    </div>
                 </form>
             </div>
         </div>
@@ -462,5 +482,26 @@
             window.location.href = '/verify/receipt/' + uuid;
         }
     });
+
+    // WhatsApp Handler
+    function sendToWhatsapp() {
+        const name = document.getElementById('contact-name').value;
+        const message = document.getElementById('contact-message').value;
+        const number = "{{ site_settings.whatsapp_contact_number | replace('+', '') | replace(' ', '') if site_settings.whatsapp_contact_number else '' }}";
+
+        if (!number) {
+            alert("Numéro WhatsApp non configuré.");
+            return;
+        }
+
+        if (!name || !message) {
+            alert("Veuillez remplir votre nom et votre message.");
+            return;
+        }
+
+        const text = `Bonjour, je suis ${name}. \n${message}`;
+        const url = `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    }
 </script>
 {% endblock %}
