@@ -33,3 +33,15 @@ def get_lang_json(lang):
     if lang not in ['fr', 'en', 'es', 'pt']:
         return jsonify({}), 404
     return jsonify(i18n.get_translations(lang))
+
+@main_bp.route('/responsive-table')
+def responsive_table_demo():
+    # Sample data for the responsive table
+    users = [
+        {"id": 1, "name": "John Doe", "email": "john@example.com", "role": "Tenant", "status": "Active", "last_login": "2023-10-25"},
+        {"id": 2, "name": "Jane Smith", "email": "jane@example.com", "role": "Landlord", "status": "Active", "last_login": "2023-10-24"},
+        {"id": 3, "name": "Bob Johnson", "email": "bob@example.com", "role": "Tenant", "status": "Inactive", "last_login": "2023-09-15"},
+        {"id": 4, "name": "Alice Williams", "email": "alice@example.com", "role": "Admin", "status": "Active", "last_login": "2023-10-26"},
+        {"id": 5, "name": "Charlie Brown", "email": "charlie@example.com", "role": "Tenant", "status": "Pending", "last_login": "N/A"},
+    ]
+    return render_template('responsive_table_demo.html', users=users)
