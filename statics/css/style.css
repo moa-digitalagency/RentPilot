@@ -37,6 +37,14 @@
     }
 }
 
+/* Print Styles for Thermal Receipts */
+@media print {
+    @page {
+        size: 80mm auto;
+        margin: 0;
+    }
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%); /* Indigo to Violet gradient */

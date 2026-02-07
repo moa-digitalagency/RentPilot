@@ -81,7 +81,7 @@
     <div class="flex flex-1 overflow-hidden">
         {% block sidebar %}
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 glass-sidebar transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full shadow-lg">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 glass-sidebar transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col h-full shadow-lg">
             <!-- Brand -->
             <div class="flex items-center justify-center h-16 border-b border-white/20">
                 <a href="{{ url_for('dashboard.dashboard') }}" class="flex items-center space-x-2">
@@ -94,15 +94,12 @@
             </div>
 
             <!-- Language Switcher -->
-            <div class="px-4 py-2 flex items-center justify-center space-x-1 border-b border-white/20">
+            <div class="px-4 py-3 flex items-center justify-center space-x-2 border-b border-white/20" aria-label="Sélecteur de langue">
                 {% for lang_code in supported_languages %}
                     <a href="{{ url_for('main.set_lang', lang=lang_code) }}"
-                       class="text-xs font-semibold px-2 py-1 rounded transition-colors {{ 'text-indigo-600 bg-white/50' if get_locale() == lang_code else 'text-gray-500 hover:text-gray-700 hover:bg-white/30' }}">
+                       class="text-xs font-bold px-3 py-1.5 rounded-lg transition-all {{ 'text-indigo-700 bg-white/60 shadow-sm ring-1 ring-indigo-100' if get_locale() == lang_code else 'text-gray-500 hover:text-indigo-600 hover:bg-white/40' }}">
                         {{ lang_code|upper }}
                     </a>
-                    {% if not loop.last %}
-                        <span class="text-gray-300">|</span>
-                    {% endif %}
                 {% endfor %}
             </div>
 

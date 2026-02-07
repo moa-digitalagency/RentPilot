@@ -9,6 +9,8 @@ class VacancyStrategy(enum.Enum):
     REDISTRIBUTE = "redistribute"  # Remaining tenants pay for empty rooms' share of variable costs
     OWNER_PAYS = "owner_pays"      # Tenants only pay their 1/N share (based on total capacity), owner covers vacancy
 
+from models.establishment import SaaSBilledTo
+
 class CostCalculator:
     """
     Core business logic for calculating cost splits in a coliving establishment.
@@ -89,11 +91,16 @@ class CostCalculator:
         syndic = self.establishment.syndic_cost or 0.0
         wifi = self.establishment.wifi_cost or 0.0
 
+        # SaaS Fee Handling (Coloc-Only / Tenants Pay)
+        saas_fee = 0.0
+        if self.establishment.saas_billed_to == SaaSBilledTo.TENANTS and self.establishment.subscription_plan:
+            saas_fee = self.establishment.subscription_plan.price_monthly or 0.0
+
         # In Equal Split, we typically assume the group is responsible for the entire property rent
         # irrespective of who is in which room.
         total_rent_property = sum(r.base_price for r in self.rooms)
 
-        grand_total = total_rent_property + total_invoices + syndic + wifi
+        grand_total = total_rent_property + total_invoices + syndic + wifi + saas_fee
 
         cost_per_person = grand_total / occupied_count
 
@@ -102,7 +109,7 @@ class CostCalculator:
         for room in occupied_rooms:
             breakdown[room.id] = {
                 "rent": total_rent_property / occupied_count, # Theoretical breakdown
-                "charges": (total_invoices + syndic + wifi) / occupied_count,
+                "charges": (total_invoices + syndic + wifi + saas_fee) / occupied_count,
                 "total": cost_per_person
             }
 
@@ -112,11 +119,12 @@ class CostCalculator:
             "per_person_share": cost_per_person,
             "breakdown_per_room": breakdown,
             "details": {
-                "comment": "Total cost (Rent + Charges) divided equally among present tenants.",
+                "comment": "Total cost (Rent + Charges + SaaS if applicable) divided equally among present tenants.",
                 "total_rent": total_rent_property,
                 "total_invoices": total_invoices,
                 "syndic": syndic,
-                "wifi": wifi
+                "wifi": wifi,
+                "saas_fee": saas_fee
             }
         }
 
@@ -133,11 +141,17 @@ class CostCalculator:
         if occupied_count == 0:
             return self._empty_result()
 
-        # 1. Fixed Costs per Person (Syndic + Wifi)
+        # 1. Fixed Costs per Person (Syndic + Wifi + SaaS if applicable)
         # "Le Syndic est toujours divisé par le nombre de personnes présentes."
         syndic = self.establishment.syndic_cost or 0.0
         wifi = self.establishment.wifi_cost or 0.0
-        fixed_charges_total = syndic + wifi
+
+        # SaaS Fee Handling (Coloc-Only / Tenants Pay)
+        saas_fee = 0.0
+        if self.establishment.saas_billed_to == SaaSBilledTo.TENANTS and self.establishment.subscription_plan:
+            saas_fee = self.establishment.subscription_plan.price_monthly or 0.0
+
+        fixed_charges_total = syndic + wifi + saas_fee
         fixed_charges_share = fixed_charges_total / occupied_count
 
         # 2. Variable Costs (Invoices)
