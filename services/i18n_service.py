@@ -63,8 +63,8 @@ class LanguageManager:
         # 4. Default
         return self._default_lang
 
-    def get_text(self, key, **kwargs):
-        lang = self.get_locale()
+    def get_text(self, key, lang=None, **kwargs):
+        lang = lang or self.get_locale()
         keys = key.split('.')
 
         # Try to fetch from translations
