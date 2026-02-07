@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request, abort, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models.users import UserRole
 from models.chores import ChoreEvent, ChoreType, ChoreValidation, ChoreStatus
@@ -15,6 +15,35 @@ def check_chore_access():
     # Strict access control: Landlords cannot access unless they are tenants
     if current_user.role == UserRole.BAILLEUR and not current_user.is_tenant:
         abort(403)
+
+@chore_bp.route('/chores', methods=['GET'])
+def index():
+    est_id = get_user_establishment_id()
+    if not est_id:
+        flash("Vous devez être locataire pour accéder à cette page.", "error")
+        return redirect(url_for('dashboard.dashboard'))
+
+    # Pre-established tasks (Chore Types)
+    chore_types = ChoreType.query.filter_by(establishment_id=est_id).all()
+
+    # Tasks pending MY validation
+    # 1. Get all events in establishment with status DONE_WAITING_VALIDATION
+    pending_events = ChoreEvent.query.join(ChoreType).filter(
+        ChoreType.establishment_id == est_id,
+        ChoreEvent.status == ChoreStatus.DONE_WAITING_VALIDATION,
+        ChoreEvent.assigned_user_id != current_user.id
+    ).all()
+
+    # 2. Filter out those I already validated
+    tasks_to_validate = []
+    for event in pending_events:
+        validator_ids = [v.validator_user_id for v in event.validations if v.is_validated]
+        if current_user.id not in validator_ids:
+            tasks_to_validate.append(event)
+
+    return render_template('chores.html',
+                           chore_types=chore_types,
+                           tasks_to_validate=tasks_to_validate)
 
 def get_user_establishment_id():
     """Helper to get the establishment ID for the current user (tenant)."""
