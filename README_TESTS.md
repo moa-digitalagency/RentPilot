@@ -57,3 +57,33 @@ Les fichiers générés incluent :
 *   `09_landing_es.png`
 *   `10_public_verification_success.png`
 *   `11_public_verification_fail.png`
+
+## `tests/generate_visual_proofs.py` (New)
+
+Ce script génère des preuves visuelles spécifiques pour la Validation UX (Phase 1, 2, 3).
+
+### Utilisation
+
+1.  Assurez-vous que le serveur tourne en arrière-plan (ou lancez-le via `python3 main.py`).
+    *   *Note: Le script attend que le serveur soit accessible sur `http://localhost:5000`.*
+2.  Lancez le script :
+
+```bash
+python3 tests/generate_visual_proofs.py
+```
+
+### Résultats
+
+Les screenshots seront sauvegardés dans le dossier `screenshots/`.
+
+Les fichiers incluent :
+*   `01_landing_portuguese.png`
+*   `02_public_receipt_valid.png`
+*   `03_superadmin_settings.png`
+*   `04_landlord_dashboard.png`
+*   `05_cobailleur_invite.png`
+*   `06_custom_expenses.png`
+*   `07_tenant_dashboard_red_theme.png`
+*   `08_chore_planning.png`
+*   `09_chat_coloc_read_receipt.png`
+*   `10_payment_modal.png`
