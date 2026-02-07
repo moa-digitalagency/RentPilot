@@ -95,7 +95,16 @@ def update_settings():
 
     # General Branding
     settings.app_name = request.form.get('app_name', settings.app_name)
-    settings.logo_url = request.form.get('logo_url', settings.logo_url)
+
+    # Logo Upload
+    logo_file = request.files.get('logo_file')
+    if logo_file and logo_file.filename != '':
+        try:
+            saved_path = UploadService.save_file(logo_file, subfolder='branding')
+            settings.logo_url = '/' + saved_path
+        except ValueError as e:
+            flash(f"Error uploading Logo: {e}", 'error')
+
     settings.primary_color_hex = request.form.get('primary_color_hex', settings.primary_color_hex)
     settings.secondary_color_hex = request.form.get('secondary_color_hex', settings.secondary_color_hex)
     settings.timezone = request.form.get('timezone', settings.timezone)

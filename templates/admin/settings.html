@@ -27,13 +27,20 @@
                         <input type="text" name="app_name" value="{{ site_settings.app_name }}" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="logo_url" name="logo_url" value="{{ site_settings.logo_url or '' }}" class="flex-1 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://...">
-                            <button type="button" onclick="previewLogo()" class="px-3 py-2 bg-gray-100 rounded-lg border border-gray-200 text-gray-600 text-sm">Preview</button>
-                        </div>
-                        <div class="mt-2 h-12 flex items-center">
-                            <img id="logo-preview" src="{{ site_settings.logo_url }}" class="max-h-full max-w-[150px] object-contain" alt="Logo Preview" onerror="this.style.display='none'">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Logo (Image)</label>
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <input type="file" name="logo_file" id="logo_file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="previewLogoFile(this)">
+                            </div>
+                            {% if site_settings.logo_url %}
+                            <div class="h-12 w-auto border border-gray-200 rounded p-1">
+                                <img id="logo-preview" src="{{ site_settings.logo_url }}" class="h-full object-contain" alt="Logo Preview">
+                            </div>
+                            {% else %}
+                             <div class="h-12 w-auto border border-gray-200 rounded p-1 hidden" id="logo-preview-container">
+                                <img id="logo-preview" src="" class="h-full object-contain" alt="Logo Preview">
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div>
@@ -245,11 +252,16 @@
 </div>
 
 <script>
-    function previewLogo() {
-        const url = document.getElementById('logo_url').value;
-        const img = document.getElementById('logo-preview');
-        img.style.display = 'block';
-        img.src = url;
+    function previewLogoFile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = document.getElementById('logo-preview');
+                img.src = e.target.result;
+                img.parentElement.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function togglePwaCustomFields() {
