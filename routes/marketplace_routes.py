@@ -11,6 +11,7 @@ from flask_login import login_required, current_user
 from config.extensions import db
 from models import Ad, Room, Establishment, EstablishmentOwner, Lease
 from models.marketplace import AdStatus
+from security.auth import bailleur_required
 from datetime import datetime
 
 marketplace_bp = Blueprint('marketplace', __name__, url_prefix='/marketplace')
@@ -42,9 +43,6 @@ def index():
 
     ads = query.order_by(Ad.created_at.desc()).all()
 
-    # Get unique cities/countries for filters dropdown (optional optimization)
-    # unique_cities = db.session.query(Ad.city).distinct().all()
-
     return render_template('marketplace/index.html', ads=ads)
 
 @marketplace_bp.route('/api/latest', methods=['GET'])
@@ -56,12 +54,18 @@ def api_latest_ads():
 
     ads_data = []
     for ad in ads:
+        price = 0
+        if ad.room:
+            price = ad.room.base_price
+        elif ad.establishment:
+            price = sum(r.base_price for r in ad.establishment.rooms)
+
         ads_data.append({
             'id': ad.id,
             'title': ad.title,
             'city': ad.city,
             'country': ad.country,
-            'price': ad.room.base_price, # Assuming room has base_price
+            'price': price,
             'description': ad.description[:100] + '...' if ad.description else '',
             'property_type': ad.property_type,
             'available_from': ad.available_from.strftime('%d/%m/%Y') if ad.available_from else 'Immédiat'
@@ -71,12 +75,20 @@ def api_latest_ads():
 
 @marketplace_bp.route('/create', methods=['GET', 'POST'])
 @login_required
+@bailleur_required
 def create():
     """
-    Create a new ad.
+    Create a new ad. Restricted to Landlords.
     """
     if request.method == 'POST':
-        room_id = request.form.get('room_id')
+        selection = request.form.get('selection') # Format: 'room:123' or 'establishment:456'
+
+        if not selection or ':' not in selection:
+             flash("Veuillez sélectionner un bien valide.", "error")
+             return redirect(url_for('marketplace.create'))
+
+        target_type, target_id = selection.split(':')
+
         title = request.form.get('title')
         description = request.form.get('description')
         available_from_str = request.form.get('available_from')
@@ -98,8 +110,8 @@ def create():
         enable_email = 'enable_email' in request.form
         contact_email = request.form.get('contact_email')
 
-        if not title or not room_id:
-            flash("Titre et Chambre sont requis.", "error")
+        if not title:
+            flash("Titre requis.", "error")
             return redirect(url_for('marketplace.create'))
 
         available_from = None
@@ -109,8 +121,46 @@ def create():
             except ValueError:
                 pass
 
+        room_id = None
+        establishment_id = None
+
+        if target_type == 'room':
+            room = Room.query.get(target_id)
+            if not room:
+                flash("Chambre introuvable.", "error")
+                return redirect(url_for('marketplace.create'))
+
+            owner = EstablishmentOwner.query.filter_by(user_id=current_user.id, establishment_id=room.establishment_id).first()
+            if not owner:
+                flash("Vous n'êtes pas propriétaire de ce bien.", "error")
+                return redirect(url_for('marketplace.create'))
+            room_id = room.id
+
+        elif target_type == 'establishment':
+            est = Establishment.query.get(target_id)
+            if not est:
+                flash("Établissement introuvable.", "error")
+                return redirect(url_for('marketplace.create'))
+
+            owner = EstablishmentOwner.query.filter_by(user_id=current_user.id, establishment_id=est.id).first()
+            if not owner:
+                flash("Vous n'êtes pas propriétaire de ce bien.", "error")
+                return redirect(url_for('marketplace.create'))
+
+            # Strict Availability Check
+            vacant_rooms = [r for r in est.rooms if r.is_vacant]
+            if len(vacant_rooms) != len(est.rooms):
+                 flash("Attention: Certaines chambres sont occupées. Vous ne pouvez publier le logement entier que s'il est entièrement disponible.", "warning")
+                 return redirect(url_for('marketplace.create'))
+
+            establishment_id = est.id
+        else:
+             flash("Type de cible invalide.", "error")
+             return redirect(url_for('marketplace.create'))
+
         new_ad = Ad(
             room_id=room_id,
+            establishment_id=establishment_id,
             title=title,
             description=description,
             available_from=available_from,
@@ -126,7 +176,7 @@ def create():
             enable_email=enable_email,
             contact_email=contact_email,
             is_active=True,
-            status=AdStatus.PENDING # Default to pending validation
+            status=AdStatus.PENDING
         )
 
         db.session.add(new_ad)
@@ -135,21 +185,31 @@ def create():
         flash("Votre annonce a été soumise pour validation !", "success")
         return redirect(url_for('marketplace.index'))
 
-    # GET: Fetch rooms the user can list
-    listable_rooms = []
+    # GET: Fetch listable items
+    listable_items = []
 
-    # Check if Landlord
     owned_estabs = EstablishmentOwner.query.filter_by(user_id=current_user.id).all()
-    if owned_estabs:
-        estab_ids = [e.establishment_id for e in owned_estabs]
-        listable_rooms.extend(Room.query.filter(Room.establishment_id.in_(estab_ids)).all())
+    for owner in owned_estabs:
+        est = owner.establishment
 
-    # Check if Tenant (active lease)
-    active_lease = Lease.query.filter_by(user_id=current_user.id).filter(Lease.end_date >= datetime.utcnow().date()).first()
-    if active_lease:
-        # Avoid duplicates if they are also landlord of their own room (rare but possible in dev)
-        room = Room.query.get(active_lease.room_id)
-        if room and room not in listable_rooms:
-            listable_rooms.append(room)
+        # Add Establishment (Whole Property)
+        is_fully_available = all(r.is_vacant for r in est.rooms)
 
-    return render_template('marketplace/create.html', rooms=listable_rooms)
+        # Only allow listing whole property if fully available (optional UI hint, enforce in backend)
+        listable_items.append({
+            'value': f'establishment:{est.id}',
+            'label': f"🏠 Logement Entier: {est.address} ({len(est.rooms)} chambres) - {sum(r.base_price for r in est.rooms)}€",
+            'disabled': not is_fully_available,
+            'note': '' if is_fully_available else '(Occupé)'
+        })
+
+        # Add Individual Rooms
+        for room in est.rooms:
+            listable_items.append({
+                'value': f'room:{room.id}',
+                'label': f"🛏️ Chambre: {room.name} - {room.base_price}€",
+                'disabled': not room.is_vacant,
+                'note': '' if room.is_vacant else '(Occupé)'
+            })
+
+    return render_template('marketplace/create.html', items=listable_items)

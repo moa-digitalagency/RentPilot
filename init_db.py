@@ -106,6 +106,20 @@ def init_db():
                             except Exception as e:
                                 print(f"Failed to add column '{column.name}' to '{table_name}': {e}")
 
+            # Specific migration for Ads room_id nullable (PostgreSQL)
+            # This is a bit risky if generic logic didn't pick it up or if we are not on Postgres
+            try:
+                if 'ads' in existing_tables:
+                    # Check if we are on Postgres
+                    if str(db.engine.url).startswith('postgresql'):
+                        sql_alter = 'ALTER TABLE "ads" ALTER COLUMN "room_id" DROP NOT NULL'
+                        with db.engine.connect() as conn:
+                             conn.execute(text(sql_alter))
+                             conn.commit()
+                        print("Successfully altered 'ads.room_id' to allow NULL (PostgreSQL).")
+            except Exception as e:
+                print(f"Failed to alter 'ads.room_id' constraint: {e}")
+
         print("Database schema check complete.")
 
         # Seed Platform Settings

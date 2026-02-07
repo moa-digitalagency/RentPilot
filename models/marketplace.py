@@ -18,12 +18,13 @@ class AdStatus(enum.Enum):
 
 class Ad(db.Model):
     """
-    Annonce pour une chambre vide ou colocation.
+    Annonce pour une chambre vide ou colocation (ou logement entier).
     """
     __tablename__ = 'ads'
 
     id = db.Column(db.Integer, primary_key=True)
-    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=True)
+    establishment_id = db.Column(db.Integer, db.ForeignKey('establishments.id'), nullable=True)
 
     # Basic Ad Details
     title = db.Column(db.String(200), nullable=False)
@@ -57,6 +58,7 @@ class Ad(db.Model):
 
     # Relationships
     room = db.relationship('Room', backref='ads', lazy=True)
+    establishment = db.relationship('Establishment', backref='ads', lazy=True)
 
 class Request(db.Model):
     """
