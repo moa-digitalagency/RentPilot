@@ -42,21 +42,50 @@
                 </div>
 
                 <!-- Ad Details -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_title') }}</label>
+                    <input type="text" name="title" required placeholder="Ex: Chambre lumineuse proche métro" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                </div>
+
+                <!-- Location & Type -->
                 <div class="grid md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_title') }}</label>
-                        <input type="text" name="title" required placeholder="Ex: Chambre lumineuse proche métro" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_desc') }}</label>
-                        <textarea name="description" rows="4" placeholder="Décrivez le bien, l'ambiance, etc." class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
-                    </div>
-
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_available') }}</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Ville</label>
+                        <input type="text" name="city" required placeholder="Ex: Paris" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Pays</label>
+                        <input type="text" name="country" required placeholder="Ex: France" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Type de bien</label>
+                        <select name="property_type" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                            <option value="Appartement">Appartement</option>
+                            <option value="Maison">Maison</option>
+                            <option value="Studio">Studio</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Disponibilité</label>
                         <input type="date" name="available_from" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                     </div>
+                </div>
+
+                <!-- Features -->
+                <div class="flex gap-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" name="is_furnished" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                        <span class="text-gray-700 font-medium">Meublé</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" name="has_syndic" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                        <span class="text-gray-700 font-medium">Syndic Inclus</span>
+                    </label>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_desc') }}</label>
+                    <textarea name="description" rows="4" placeholder="Décrivez le bien, l'ambiance, etc." class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
                 </div>
 
                 <hr class="border-gray-100">

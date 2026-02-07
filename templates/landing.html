@@ -225,23 +225,117 @@
 </section>
 
 <!-- MARKETPLACE SECTION -->
-<section id="marketplace" class="py-24 bg-indigo-900 text-white relative overflow-hidden scroll-mt-24">
+<section id="marketplace" class="py-24 bg-gradient-to-br from-indigo-900 to-purple-900 text-white relative overflow-hidden scroll-mt-24" x-data="marketplaceWidget">
+    <!-- Background Patterns -->
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <span class="inline-block py-1 px-3 rounded-full bg-indigo-800 text-indigo-200 text-xs font-bold tracking-wide uppercase mb-6 shadow-sm border border-indigo-700">
-            {{ _('marketplace.title') }}
-        </span>
-        <h2 class="text-3xl md:text-5xl font-bold mb-6">
-            {{ _('marketplace.subtitle') }}
-        </h2>
-        <p class="text-xl text-indigo-200 mb-10 max-w-2xl mx-auto">
-            {{ _('landing.feature_market_desc') }}
-        </p>
 
-        <a href="{{ url_for('marketplace.index') }}" class="inline-flex items-center px-8 py-4 text-lg font-bold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 shadow-lg shadow-indigo-900/50 transform hover:scale-105 transition-all duration-200">
-            {{ _('marketplace.title') }}
-            <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-        </a>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        <!-- Header & Intro -->
+        <div class="text-center mb-16">
+            <span class="inline-block py-1 px-3 rounded-full bg-indigo-800 text-indigo-200 text-xs font-bold tracking-wide uppercase mb-6 shadow-sm border border-indigo-700">
+                {{ _('marketplace.title') }}
+            </span>
+            <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+                Trouvez votre prochaine <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">colocation idéale</span>
+            </h2>
+            <p class="text-xl text-indigo-200 mb-8 max-w-3xl mx-auto">
+                Connectez-vous directement avec des propriétaires vérifiés et des colocataires sympas.
+                Que vous cherchiez une chambre meublée, un studio ou une grande maison, RentPilot facilite votre recherche.
+            </p>
+
+            <!-- Dynamic Location Badge -->
+            <div x-show="location.city" class="animate-fade-in inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-1 text-sm text-emerald-300 border border-white/10">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Offres à proximité de <span x-text="location.city" class="font-bold ml-1"></span>, <span x-text="location.country" class="ml-1"></span>
+            </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl p-4 shadow-2xl mb-16 transform -translate-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="relative">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ville</label>
+                    <input type="text" x-model="filters.city" placeholder="Ex: Paris" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                </div>
+                <div class="relative">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pays</label>
+                    <input type="text" x-model="filters.country" placeholder="Ex: France" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                </div>
+                <div class="relative">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Type</label>
+                    <select x-model="filters.property_type" class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                        <option value="">Tout</option>
+                        <option value="Appartement">Appartement</option>
+                        <option value="Maison">Maison</option>
+                        <option value="Studio">Studio</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <a :href="searchUrl()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center shadow-md">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        Rechercher
+                    </a>
+                </div>
+            </div>
+            <!-- Additional Filters (Furnished/Syndic) could be added here or on main page -->
+            <div class="mt-3 flex gap-4 text-xs text-gray-500 px-1">
+                <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Meublé</span>
+                <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Syndic Inclus</span>
+            </div>
+        </div>
+
+        <!-- Carousel / Latest Ads -->
+        <div class="relative">
+            <h3 class="text-2xl font-bold text-white mb-8 text-center md:text-left">Dernières Annonces</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" x-show="!isLoading && ads.length > 0">
+                <template x-for="ad in ads" :key="ad.id">
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                        <!-- Image Placeholder (using gradient as we don't have images yet) -->
+                        <div class="h-48 bg-gradient-to-br from-gray-200 to-gray-300 relative flex items-center justify-center">
+                            <span class="text-gray-400 text-4xl opacity-50 font-bold" x-text="ad.property_type.charAt(0)"></span>
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-lg px-3 py-1 text-sm font-bold text-indigo-900 shadow-sm" x-text="ad.price + ' €'"></div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="text-xl font-bold text-gray-900 line-clamp-1" x-text="ad.title"></h4>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span x-text="ad.city + ', ' + ad.country"></span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2" x-text="ad.description"></p>
+
+                            <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400" x-text="'Dispo: ' + ad.available_from"></span>
+                                <a :href="'/marketplace?id=' + ad.id" class="text-indigo-600 font-bold text-sm hover:underline">Voir détails →</a>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Loading State -->
+            <div x-show="isLoading" class="flex justify-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div x-show="!isLoading && ads.length === 0" class="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+                <svg class="w-16 h-16 mx-auto text-indigo-300 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <p class="text-xl text-indigo-200">Pas d'annonces disponibles pour le moment.</p>
+                <p class="text-indigo-400 mt-2">Soyez le premier à publier !</p>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a href="{{ url_for('marketplace.index') }}" class="inline-flex items-center px-8 py-4 text-lg font-bold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 shadow-lg shadow-indigo-900/50 transform hover:scale-105 transition-all duration-200">
+                    Voir toutes les annonces
+                    <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -504,6 +598,51 @@
 
 {% block scripts %}
 <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('marketplaceWidget', () => ({
+            ads: [],
+            location: { city: '', country: '' },
+            filters: { city: '', country: '', property_type: '' },
+            isLoading: true,
+
+            async init() {
+                // Auto-detect location
+                try {
+                    const res = await fetch('/api/geo/detect');
+                    if(res.ok) {
+                        const data = await res.json();
+                        this.location.city = data.city;
+                        this.location.country = data.country;
+                        this.filters.city = data.city;
+                        this.filters.country = data.country;
+                    }
+                } catch(e) {
+                    console.log('Location detection failed', e);
+                }
+
+                // Fetch Latest Ads
+                try {
+                    const res = await fetch('/marketplace/api/latest');
+                    if(res.ok) {
+                        this.ads = await res.json();
+                    }
+                } catch(e) {
+                    console.error('Failed to load ads');
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+
+            searchUrl() {
+                const params = new URLSearchParams();
+                if(this.filters.city) params.append('city', this.filters.city);
+                if(this.filters.country) params.append('country', this.filters.country);
+                if(this.filters.property_type) params.append('property_type', this.filters.property_type);
+                return "{{ url_for('marketplace.index') }}?" + params.toString();
+            }
+        }));
+    });
+
     // Verify Form Handler
     document.getElementById('verify-form').addEventListener('submit', function(e) {
         e.preventDefault();

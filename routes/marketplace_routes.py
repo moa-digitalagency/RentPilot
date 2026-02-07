@@ -6,10 +6,11 @@
 * Fait par : Aisance KALONJI, www.aisancekalonji.com
 * Auditer par : La CyberConfiance, www.cyberconfiance.com
 """
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from config.extensions import db
 from models import Ad, Room, Establishment, EstablishmentOwner, Lease
+from models.marketplace import AdStatus
 from datetime import datetime
 
 marketplace_bp = Blueprint('marketplace', __name__, url_prefix='/marketplace')
@@ -17,10 +18,56 @@ marketplace_bp = Blueprint('marketplace', __name__, url_prefix='/marketplace')
 @marketplace_bp.route('/', methods=['GET'])
 def index():
     """
-    List all active marketplace ads.
+    List all active marketplace ads with filters.
     """
-    ads = Ad.query.filter_by(is_active=True).order_by(Ad.created_at.desc()).all()
+    query = Ad.query.filter(Ad.is_active == True, Ad.status == AdStatus.APPROVED)
+
+    # Filters
+    city = request.args.get('city')
+    country = request.args.get('country')
+    property_type = request.args.get('property_type')
+    is_furnished = request.args.get('is_furnished') == 'on'
+    has_syndic = request.args.get('has_syndic') == 'on'
+
+    if city:
+        query = query.filter(Ad.city.ilike(f'%{city}%'))
+    if country:
+        query = query.filter(Ad.country.ilike(f'%{country}%'))
+    if property_type:
+        query = query.filter(Ad.property_type == property_type)
+    if is_furnished:
+        query = query.filter(Ad.is_furnished == True)
+    if has_syndic:
+        query = query.filter(Ad.has_syndic == True)
+
+    ads = query.order_by(Ad.created_at.desc()).all()
+
+    # Get unique cities/countries for filters dropdown (optional optimization)
+    # unique_cities = db.session.query(Ad.city).distinct().all()
+
     return render_template('marketplace/index.html', ads=ads)
+
+@marketplace_bp.route('/api/latest', methods=['GET'])
+def api_latest_ads():
+    """
+    Return the 3 latest approved ads as JSON for the landing page carousel.
+    """
+    ads = Ad.query.filter(Ad.is_active == True, Ad.status == AdStatus.APPROVED).order_by(Ad.created_at.desc()).limit(3).all()
+
+    ads_data = []
+    for ad in ads:
+        ads_data.append({
+            'id': ad.id,
+            'title': ad.title,
+            'city': ad.city,
+            'country': ad.country,
+            'price': ad.room.base_price, # Assuming room has base_price
+            'description': ad.description[:100] + '...' if ad.description else '',
+            'property_type': ad.property_type,
+            'available_from': ad.available_from.strftime('%d/%m/%Y') if ad.available_from else 'Immédiat'
+        })
+
+    return jsonify(ads_data)
 
 @marketplace_bp.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -33,6 +80,13 @@ def create():
         title = request.form.get('title')
         description = request.form.get('description')
         available_from_str = request.form.get('available_from')
+
+        # New Fields
+        city = request.form.get('city')
+        country = request.form.get('country')
+        property_type = request.form.get('property_type')
+        is_furnished = 'is_furnished' in request.form
+        has_syndic = 'has_syndic' in request.form
 
         # Contact Config
         enable_whatsapp = 'enable_whatsapp' in request.form
@@ -60,26 +114,28 @@ def create():
             title=title,
             description=description,
             available_from=available_from,
+            city=city,
+            country=country,
+            property_type=property_type,
+            is_furnished=is_furnished,
+            has_syndic=has_syndic,
             enable_whatsapp=enable_whatsapp,
             whatsapp_number=whatsapp_number,
             enable_phone=enable_phone,
             phone_number=phone_number,
             enable_email=enable_email,
             contact_email=contact_email,
-            is_active=True
+            is_active=True,
+            status=AdStatus.PENDING # Default to pending validation
         )
 
         db.session.add(new_ad)
         db.session.commit()
 
-        flash("Votre annonce a été publiée avec succès !", "success")
+        flash("Votre annonce a été soumise pour validation !", "success")
         return redirect(url_for('marketplace.index'))
 
     # GET: Fetch rooms the user can list
-    # Logic:
-    # 1. If Landlord (in EstablishmentOwner), get rooms in those establishments.
-    # 2. If Tenant (has Lease), get that room.
-
     listable_rooms = []
 
     # Check if Landlord
@@ -95,8 +151,5 @@ def create():
         room = Room.query.get(active_lease.room_id)
         if room and room not in listable_rooms:
             listable_rooms.append(room)
-
-    # Fallback for Super Admin or demo: show all if list is empty? Or just show nothing.
-    # If list is empty, maybe they are a new user.
 
     return render_template('marketplace/create.html', rooms=listable_rooms)

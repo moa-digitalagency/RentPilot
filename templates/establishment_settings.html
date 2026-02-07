@@ -62,6 +62,44 @@
         </form>
     </div>
 
+    <!-- Occupants Section -->
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Locataires & Occupants</h2>
+        <div class="space-y-4">
+            {% for room in establishment.rooms %}
+                {% if not room.is_vacant %}
+                    {% for lease in room.leases %}
+                        {% if not lease.end_date or lease.end_date >= datetime.utcnow().date() %}
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                                    {{ lease.tenant.email[0]|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">{{ lease.tenant.email }}</p>
+                                    <p class="text-xs text-gray-500">Chambre: {{ room.name }}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                {% if lease.tenant.is_identity_verified and lease.tenant.identity_card_url %}
+                                <a href="{{ lease.tenant.identity_card_url }}" target="_blank" class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl hover:bg-emerald-200 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    Identité ({{ lease.tenant.identity_card_url.split('.')[-1] | upper }})
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('establishment.generate_lease', lease_id=lease.id) }}" class="px-4 py-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl hover:bg-indigo-200 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Bail PDF
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- Co-Owners Section -->
     <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Co-Propriétaires</h2>

@@ -10,80 +10,148 @@
 {% block content %}
 <section class="py-24 bg-gray-50 min-h-screen pt-32">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-end mb-12">
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
             <div>
                 <h1 class="text-4xl font-extrabold text-gray-900 mb-4">{{ _('marketplace.title') }}</h1>
                 <p class="text-xl text-gray-500">{{ _('marketplace.subtitle') }}</p>
             </div>
-            <a href="{{ url_for('marketplace.create') }}" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">
+            <a href="{{ url_for('marketplace.create') }}" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 {{ _('marketplace.create_ad') }}
             </a>
         </div>
 
-        {% if ads %}
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for ad in ads %}
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-                <!-- Image Placeholder (using Room generic image or placeholder) -->
-                <div class="aspect-video bg-gray-100 rounded-2xl mb-6 relative overflow-hidden">
-                    <div class="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-50">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    </div>
-                     <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-sm font-bold text-gray-900 shadow-sm">
-                        {{ ad.room.base_price }} € / mois
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{{ ad.title }}</h3>
-                    <div class="flex items-center text-sm text-gray-500 mb-4">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        {{ ad.room.establishment.address }}
-                    </div>
-                    <p class="text-gray-600 line-clamp-3 mb-6">{{ ad.description }}</p>
-                </div>
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 sticky top-32">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Filtrer
+                    </h3>
 
-                <div class="pt-6 border-t border-gray-100 mt-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-sm font-medium text-gray-500">{{ _('marketplace.available') }} :</span>
-                        <span class="text-sm font-bold text-gray-900">{{ ad.available_from.strftime('%d/%m/%Y') if ad.available_from else 'Immédiatement' }}</span>
-                    </div>
+                    <form action="{{ url_for('marketplace.index') }}" method="GET" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Ville</label>
+                            <input type="text" name="city" value="{{ request.args.get('city', '') }}" placeholder="Ex: Paris" class="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 text-sm">
+                        </div>
 
-                    <div class="flex gap-2">
-                        {% if ad.enable_whatsapp and ad.whatsapp_number %}
-                        <a href="https://wa.me/{{ ad.whatsapp_number | replace('+', '') | replace(' ', '') }}" target="_blank" class="flex-1 py-2 bg-green-50 text-green-600 rounded-lg font-bold text-center hover:bg-green-100 transition-colors flex justify-center items-center gap-2" title="{{ _('marketplace.whatsapp') }}">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.664-.698c.965.526 1.775.795 2.796.795 3.181 0 5.767-2.587 5.767-5.766.001-3.182-2.585-5.767-5.767-5.767zm0 13.891c-4.471 0-8.126-3.655-8.126-8.125s3.655-8.125 8.126-8.125c4.47 0 8.125 3.655 8.125 8.125s-3.655 8.125-8.125 8.125zm7.394-11.465c-.26-.144-1.536-.757-1.774-.843-.237-.086-.409-.129-.582.129-.172.257-.667.843-.817 1.015-.15.172-.299.193-.559.064-.26-.129-1.096-.404-2.088-1.288-.772-.689-1.294-1.539-1.444-1.797-.151-.258-.016-.398.113-.527.118-.117.26-.301.39-.451.129-.151.172-.257.258-.429.086-.172.043-.322-.022-.451-.064-.129-.582-1.402-.796-1.921-.208-.506-.419-.437-.582-.445h-.494c-.172 0-.451.064-.688.322-.236.257-.902.881-.902 2.149 0 1.268.924 2.493 1.053 2.665.129.172 1.819 2.776 4.407 3.892.616.266 1.096.425 1.47.544.619.197 1.182.169 1.629.102.497-.074 1.536-.628 1.751-1.233.216-.606.216-1.125.151-1.234-.065-.108-.237-.172-.497-.301z"/></svg>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Pays</label>
+                            <input type="text" name="country" value="{{ request.args.get('country', '') }}" placeholder="Ex: France" class="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Type de bien</label>
+                            <select name="property_type" class="w-full px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <option value="">Tous</option>
+                                <option value="Appartement" {% if request.args.get('property_type') == 'Appartement' %}selected{% endif %}>Appartement</option>
+                                <option value="Maison" {% if request.args.get('property_type') == 'Maison' %}selected{% endif %}>Maison</option>
+                                <option value="Studio" {% if request.args.get('property_type') == 'Studio' %}selected{% endif %}>Studio</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-3 pt-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" name="is_furnished" class="form-checkbox h-5 w-5 text-indigo-600 rounded" {% if request.args.get('is_furnished') %}checked{% endif %}>
+                                <span class="text-gray-700 text-sm font-medium">Meublé</span>
+                            </label>
+
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" name="has_syndic" class="form-checkbox h-5 w-5 text-indigo-600 rounded" {% if request.args.get('has_syndic') %}checked{% endif %}>
+                                <span class="text-gray-700 text-sm font-medium">Syndic Inclus</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-md">
+                            Appliquer
+                        </button>
+
+                        {% if request.args %}
+                        <a href="{{ url_for('marketplace.index') }}" class="block text-center text-sm text-gray-500 hover:text-gray-800 underline">
+                            Réinitialiser
                         </a>
                         {% endif %}
-
-                        {% if ad.enable_phone and ad.phone_number %}
-                        <a href="tel:{{ ad.phone_number }}" class="flex-1 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-bold text-center hover:bg-indigo-100 transition-colors flex justify-center items-center gap-2" title="{{ _('marketplace.phone') }}">
-                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        </a>
-                        {% endif %}
-
-                        {% if ad.enable_email and ad.contact_email %}
-                        <a href="mailto:{{ ad.contact_email }}" class="flex-1 py-2 bg-purple-50 text-purple-600 rounded-lg font-bold text-center hover:bg-purple-100 transition-colors flex justify-center items-center gap-2" title="{{ _('marketplace.email') }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        </a>
-                        {% endif %}
-                    </div>
+                    </form>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center py-24">
-            <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-300 mx-auto mb-6">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+
+            <!-- Ads Grid -->
+            <div class="lg:col-span-3">
+                {% if ads %}
+                <div class="grid md:grid-cols-2 gap-8">
+                    {% for ad in ads %}
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group flex flex-col h-full relative">
+                        <!-- Image Placeholder -->
+                        <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl mb-6 relative overflow-hidden flex items-center justify-center">
+                            <span class="text-6xl text-gray-300 font-bold opacity-30">{{ ad.property_type[0] if ad.property_type else 'H' }}</span>
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-sm font-bold text-gray-900 shadow-sm">
+                                {{ ad.room.base_price }} € / mois
+                            </div>
+
+                            <div class="absolute bottom-4 left-4 flex gap-2">
+                                {% if ad.is_furnished %}
+                                <span class="bg-white/90 backdrop-blur px-2 py-0.5 rounded text-xs font-bold text-green-700 shadow-sm">Meublé</span>
+                                {% endif %}
+                                {% if ad.has_syndic %}
+                                <span class="bg-white/90 backdrop-blur px-2 py-0.5 rounded text-xs font-bold text-blue-700 shadow-sm">Syndic</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-1" title="{{ ad.title }}">{{ ad.title }}</h3>
+                            </div>
+
+                            <div class="flex items-center text-sm text-gray-500 mb-2">
+                                <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                {{ ad.city or ad.room.establishment.address }}, {{ ad.country }}
+                            </div>
+
+                            <p class="text-gray-600 line-clamp-3 mb-6 text-sm">{{ ad.description }}</p>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-100 mt-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-sm font-medium text-gray-500">{{ _('marketplace.available') }} :</span>
+                                <span class="text-sm font-bold text-gray-900">{{ ad.available_from.strftime('%d/%m/%Y') if ad.available_from else 'Immédiatement' }}</span>
+                            </div>
+
+                            <div class="flex gap-2">
+                                {% if ad.enable_whatsapp and ad.whatsapp_number %}
+                                <a href="https://wa.me/{{ ad.whatsapp_number | replace('+', '') | replace(' ', '') }}" target="_blank" class="flex-1 py-2 bg-green-50 text-green-600 rounded-lg font-bold text-center hover:bg-green-100 transition-colors flex justify-center items-center gap-2" title="{{ _('marketplace.whatsapp') }}">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.664-.698c.965.526 1.775.795 2.796.795 3.181 0 5.767-2.587 5.767-5.766.001-3.182-2.585-5.767-5.767-5.767zm0 13.891c-4.471 0-8.126-3.655-8.126-8.125s3.655-8.125 8.126-8.125c4.47 0 8.125 3.655 8.125 8.125s-3.655 8.125-8.125 8.125zm7.394-11.465c-.26-.144-1.536-.757-1.774-.843-.237-.086-.409-.129-.582.129-.172.257-.667.843-.817 1.015-.15.172-.299.193-.559.064-.26-.129-1.096-.404-2.088-1.288-.772-.689-1.294-1.539-1.444-1.797-.151-.258-.016-.398.113-.527.118-.117.26-.301.39-.451.129-.151.172-.257.258-.429.086-.172.043-.322-.022-.451-.064-.129-.582-1.402-.796-1.921-.208-.506-.419-.437-.582-.445h-.494c-.172 0-.451.064-.688.322-.236.257-.902.881-.902 2.149 0 1.268.924 2.493 1.053 2.665.129.172 1.819 2.776 4.407 3.892.616.266 1.096.425 1.47.544.619.197 1.182.169 1.629.102.497-.074 1.536-.628 1.751-1.233.216-.606.216-1.125.151-1.234-.065-.108-.237-.172-.497-.301z"/></svg>
+                                </a>
+                                {% endif %}
+
+                                {% if ad.enable_email and ad.contact_email %}
+                                <a href="mailto:{{ ad.contact_email }}" class="flex-1 py-2 bg-purple-50 text-purple-600 rounded-lg font-bold text-center hover:bg-purple-100 transition-colors flex justify-center items-center gap-2" title="{{ _('marketplace.email') }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-24 bg-white rounded-3xl border border-dashed border-gray-300">
+                    <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-300 mx-auto mb-6">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('marketplace.no_ads') }}</h3>
+                    <p class="text-gray-500 mb-8">Aucun bien ne correspond à vos critères de recherche.</p>
+                    <a href="{{ url_for('marketplace.index') }}" class="text-indigo-600 font-bold hover:underline">
+                        Effacer les filtres
+                    </a>
+                </div>
+                {% endif %}
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ _('marketplace.no_ads') }}</h3>
-            <p class="text-gray-500 mb-8">{{ _('marketplace.subtitle') }}</p>
-            <a href="{{ url_for('marketplace.create') }}" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors">
-                {{ _('marketplace.create_ad') }}
-            </a>
         </div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}
