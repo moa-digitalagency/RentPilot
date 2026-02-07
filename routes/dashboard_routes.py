@@ -4,6 +4,7 @@ from models.users import UserRole
 from models.establishment import Establishment, Lease
 from models.maintenance import Ticket
 from models.finance import Transaction, Invoice
+from algorithms.cost_splitter import CostCalculator
 from datetime import datetime
 
 dashboard_bp = Blueprint('dashboard', __name__)
@@ -68,12 +69,28 @@ def dashboard():
                     if l and l.tenant:
                         roommates.append(l.tenant)
 
+            # Calculate Amount Due
+            # Get invoices for current month? Or all pending?
+            # For showcase simplicity, we take all invoices of the establishment (or filtered by date in a real app)
+            # Here we assume the setup has created relevant invoices for the period.
+            invoices = Invoice.query.filter_by(establishment_id=establishment.id).all()
+
+            calculator = CostCalculator(establishment, establishment.rooms, invoices)
+            calculation_result = calculator.calculate()
+
+            amount_to_pay = 0.0
+            if 'breakdown_per_room' in calculation_result:
+                room_data = calculation_result['breakdown_per_room'].get(room.id)
+                if room_data:
+                    amount_to_pay = room_data.get('total', 0.0)
+
             context = {
                 'role': 'Tenant',
                 'lease': active_lease,
                 'room': room,
                 'establishment': establishment,
-                'roommates': roommates
+                'roommates': roommates,
+                'amount_to_pay': amount_to_pay
             }
         else:
              context = {

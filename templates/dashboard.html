@@ -109,7 +109,7 @@
             <div class="relative z-10">
                 <h3 class="text-indigo-100 font-medium text-sm">Ma part à payer (Ce mois)</h3>
                 <div class="mt-2 flex items-baseline">
-                    <span class="text-4xl font-bold">550 €</span> <!-- Mock Data, ideally passed from backend -->
+                    <span class="text-4xl font-bold">{{ "%.2f"|format(amount_to_pay) if amount_to_pay else "0.00" }} €</span>
                 </div>
                 <p class="text-xs text-indigo-200 mt-4">Échéance le 05/{{ now_month if now_month else 'Mois' }}</p>
                 <button class="mt-6 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg font-semibold text-sm transition">

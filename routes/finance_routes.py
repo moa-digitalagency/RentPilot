@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from security.auth import bailleur_required, tenant_required
 from models.users import UserRole
 from models.finance import Invoice, Transaction, PaymentProof, ExpenseType, ValidationStatus
-from models.establishment import Lease
+from models.establishment import Lease, Establishment
 from config.extensions import db
 from services.upload_service import UploadService
 from services.pdf_service import PDFService
@@ -15,9 +15,32 @@ finance_bp = Blueprint('finance', __name__)
 @finance_bp.route('/finance')
 @login_required
 def dashboard():
-    # Placeholder for Finance Dashboard
-    # In future: List transactions, invoices, charts specific to finance.
-    return render_template('finance.html')
+    context = {}
+    if current_user.role == UserRole.BAILLEUR:
+        # Get pending transactions for landlord's establishments
+        establishments = Establishment.query.filter_by(landlord_id=current_user.id).all()
+        est_ids = [e.id for e in establishments]
+
+        # Join Transaction -> Invoice -> Establishment
+        # OR Transaction -> User -> Lease -> Room -> Establishment (More complex)
+        # Assuming Transaction links to Invoice usually.
+        # But if Transaction is general payment, we might need other logic.
+        # For this showcase, we'll check transactions linked to Invoices of these establishments
+        # OR just transactions by tenants of these establishments.
+
+        # Get Tenant IDs via Lease -> Room
+        from models.establishment import Room
+        tenant_ids = db.session.query(Lease.user_id).join(Room).filter(Room.establishment_id.in_(est_ids)).all()
+        tenant_ids_list = [t[0] for t in tenant_ids]
+
+        pending_transactions = Transaction.query.filter(
+            Transaction.user_id.in_(tenant_ids_list),
+            Transaction.validation_status == ValidationStatus.PENDING
+        ).all()
+
+        context['pending_transactions'] = pending_transactions
+
+    return render_template('finance.html', **context)
 
 @finance_bp.route('/finance/add-expense', methods=['GET', 'POST'])
 @login_required

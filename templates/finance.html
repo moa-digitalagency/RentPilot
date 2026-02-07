@@ -53,19 +53,30 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
+                    {% if pending_transactions %}
+                    {% for trx in pending_transactions %}
                     <tr class="hover:bg-white/40 transition-colors">
                         <td class="px-6 py-4 flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">L</div>
-                            Lucas Dupont
+                            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">{{ trx.payer.email[0]|upper }}</div>
+                            {{ trx.payer.email }}
                         </td>
-                        <td class="px-6 py-4">Loyer Mars 2024</td>
-                        <td class="px-6 py-4 font-semibold">550.00 €</td>
-                        <td class="px-6 py-4">12/03/2024</td>
+                        <td class="px-6 py-4">
+                            {{ trx.invoice.description if trx.invoice else "Paiement" }}
+                        </td>
+                        <td class="px-6 py-4 font-semibold">{{ "%.2f"|format(trx.amount) }} €</td>
+                        <td class="px-6 py-4">{{ trx.date.strftime('%d/%m/%Y') }}</td>
                         <td class="px-6 py-4 text-right space-x-2">
                             <button onclick="openModal('modal-preview-proof')" class="text-indigo-600 hover:text-indigo-900 font-medium">Voir</button>
-                            <button class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-semibold shadow hover:bg-emerald-600 transition-colors">Valider</button>
+                            <form action="{{ url_for('finance.validate_payment', transaction_id=trx.id) }}" method="POST" class="inline">
+                                <input type="hidden" name="action" value="validate">
+                                <button type="submit" class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-semibold shadow hover:bg-emerald-600 transition-colors">Valider</button>
+                            </form>
                         </td>
                     </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucun paiement en attente.</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
