@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships (using string references to avoid circular imports)
-    establishments = db.relationship('Establishment', backref='landlord', lazy=True)
+    establishment_associations = db.relationship('EstablishmentOwner', back_populates='user', lazy=True, cascade='all, delete-orphan')
     leases = db.relationship('Lease', backref='tenant', lazy=True)
     transactions = db.relationship('Transaction', backref='payer', lazy=True)
     sent_messages = db.relationship('Message', backref='sender', lazy=True)

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from models.maintenance import Ticket
 from models.users import UserRole
-from models.establishment import Establishment, Lease
+from models.establishment import Establishment, Lease, EstablishmentOwner
 from config.extensions import db
 from datetime import datetime
 
@@ -13,7 +13,7 @@ ticket_bp = Blueprint('ticket', __name__)
 def list_tickets():
     if current_user.role == UserRole.BAILLEUR:
         # Bailleur sees all tickets for his establishments
-        establishments = Establishment.query.filter_by(landlord_id=current_user.id).all()
+        establishments = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == current_user.id).all()
         est_ids = [e.id for e in establishments]
         if est_ids:
              tickets = Ticket.query.filter(Ticket.establishment_id.in_(est_ids)).all()
@@ -65,6 +65,6 @@ def create_ticket():
     # Context for template (e.g. list of establishments for Bailleur)
     context = {}
     if current_user.role == UserRole.BAILLEUR:
-        context['establishments'] = Establishment.query.filter_by(landlord_id=current_user.id).all()
+        context['establishments'] = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == current_user.id).all()
 
     return render_template('tickets.html', **context)

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from models.users import UserRole
-from models.establishment import Establishment, Lease
+from models.establishment import Establishment, Lease, EstablishmentOwner
 from models.maintenance import Ticket
 from models.finance import Transaction, Invoice
 from algorithms.cost_splitter import CostCalculator
@@ -23,7 +23,7 @@ def dashboard():
 
     if current_user.role == UserRole.BAILLEUR:
         # Bailleur logic
-        establishments = Establishment.query.filter_by(landlord_id=current_user.id).all()
+        establishments = Establishment.query.join(EstablishmentOwner).filter(EstablishmentOwner.user_id == current_user.id).all()
 
         total_tenants = 0
         est_ids = []

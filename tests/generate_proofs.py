@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from main import app
 from config.extensions import db
 from models.users import User, UserRole
-from models.establishment import Establishment, Room, Lease, FinancialMode, SaaSBilledTo
+from models.establishment import Establishment, Room, Lease, FinancialMode, SaaSBilledTo, EstablishmentOwner, EstablishmentOwnerRole
 from models.finance import Transaction, Invoice, ExpenseType, ValidationStatus, PaymentProof
 from security.pwd_tools import hash_password
 from config.settings import Config
@@ -65,7 +65,6 @@ class RentPilotProofs:
             # - Parcours 3: Tenant checks math.
 
             est = Establishment(
-                landlord_id=landlord.id,
                 address='10 Rue de la Paix, Paris',
                 fuzzy_location='Paris Center',
                 config_financial_mode=FinancialMode.EGAL, # Will be changed in Parcours 2? Or verified?
@@ -78,6 +77,14 @@ class RentPilotProofs:
                 expense_types_config=["Loyer"] # Minimal config
             )
             db.session.add(est)
+            db.session.commit()
+
+            owner = EstablishmentOwner(
+                user_id=landlord.id,
+                establishment_id=est.id,
+                role=EstablishmentOwnerRole.PRIMARY
+            )
+            db.session.add(owner)
             db.session.commit()
 
             # 4. Rooms (4 Chambres)

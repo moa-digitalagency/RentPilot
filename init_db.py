@@ -2,7 +2,8 @@ from config.init_app import create_app
 from config.extensions import db
 from models import (
     User, Establishment, Room, Lease, UserRole, FinancialMode,
-    ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan, ReceiptFormat
+    ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan, ReceiptFormat,
+    EstablishmentOwner, EstablishmentOwnerRole
 )
 from security.pwd_tools import hash_password
 from datetime import date
@@ -63,7 +64,6 @@ def init_db():
 
         # 1 Establishment
         establishment = Establishment(
-            landlord_id=landlord.id,
             address='123 Demo Street, Paris',
             fuzzy_location='Paris 1er Arrondissement (approx)',
             config_financial_mode=FinancialMode.EGAL,
@@ -73,7 +73,16 @@ def init_db():
         )
         db.session.add(establishment)
         db.session.commit()
-        print("Added Establishment.")
+
+        # Add Landlord association
+        assoc = EstablishmentOwner(
+            user_id=landlord.id,
+            establishment_id=establishment.id,
+            role=EstablishmentOwnerRole.PRIMARY
+        )
+        db.session.add(assoc)
+        db.session.commit()
+        print("Added Establishment and Landlord association.")
 
         # Chat Rooms
         general_chat = ChatRoom(
