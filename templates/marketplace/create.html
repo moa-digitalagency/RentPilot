@@ -1,3 +1,4 @@
+
 <!--
 * Nom de l'application : RentPilot
 * Description : Marketplace Create Ad Template.
@@ -22,29 +23,31 @@
             <form action="{{ url_for('marketplace.create') }}" method="POST" class="space-y-8">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                <!-- Room Selection -->
+                <!-- Selection (Room or Establishment) -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_room') }}</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Bien à louer</label>
                     <div class="relative">
-                        <select name="room_id" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition-colors">
-                            <option value="" disabled selected>Sélectionner un bien</option>
-                            {% for room in rooms %}
-                            <option value="{{ room.id }}">{{ room.name }} - {{ room.base_price }}€ ({{ room.establishment.address }})</option>
+                        <select name="selection" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition-colors">
+                            <option value="" disabled selected>Sélectionner un bien...</option>
+                            {% for item in items %}
+                            <option value="{{ item.value }}" {% if item.disabled %}disabled{% endif %}>
+                                {{ item.label }} {{ item.note }}
+                            </option>
                             {% endfor %}
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </div>
-                    {% if not rooms %}
-                    <p class="mt-2 text-sm text-red-500">Aucun bien disponible à la location pour votre compte.</p>
+                    {% if not items %}
+                    <p class="mt-2 text-sm text-red-500">Aucun bien disponible (vous devez être propriétaire).</p>
                     {% endif %}
                 </div>
 
                 <!-- Ad Details -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_title') }}</label>
-                    <input type="text" name="title" required placeholder="Ex: Chambre lumineuse proche métro" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    <input type="text" name="title" required placeholder="Ex: Grande maison familiale ou Chambre étudiante" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
                 </div>
 
                 <!-- Location & Type -->

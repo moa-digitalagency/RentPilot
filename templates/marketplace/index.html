@@ -1,3 +1,4 @@
+
 <!--
 * Nom de l'application : RentPilot
 * Description : Marketplace Index Template.
@@ -89,7 +90,11 @@
                         <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl mb-6 relative overflow-hidden flex items-center justify-center">
                             <span class="text-6xl text-gray-300 font-bold opacity-30">{{ ad.property_type[0] if ad.property_type else 'H' }}</span>
                             <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-sm font-bold text-gray-900 shadow-sm">
-                                {{ ad.room.base_price }} € / mois
+                                {% if ad.establishment %}
+                                    {{ ad.establishment.rooms|sum(attribute='base_price') }} € / mois
+                                {% else %}
+                                    {{ ad.room.base_price }} € / mois
+                                {% endif %}
                             </div>
 
                             <div class="absolute bottom-4 left-4 flex gap-2">
@@ -109,7 +114,11 @@
 
                             <div class="flex items-center text-sm text-gray-500 mb-2">
                                 <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                {{ ad.city or ad.room.establishment.address }}, {{ ad.country }}
+                                {% if ad.establishment %}
+                                    {{ ad.city or ad.establishment.address }}, {{ ad.country }}
+                                {% else %}
+                                    {{ ad.city or ad.room.establishment.address }}, {{ ad.country }}
+                                {% endif %}
                             </div>
 
                             <p class="text-gray-600 line-clamp-3 mb-6 text-sm">{{ ad.description }}</p>
