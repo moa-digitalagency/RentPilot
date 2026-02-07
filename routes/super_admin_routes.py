@@ -107,6 +107,21 @@ def update_settings():
     # Maintenance
     settings.is_maintenance_mode = request.form.get('is_maintenance_mode') == 'true'
 
+    # PWA Configuration
+    settings.pwa_enabled = request.form.get('pwa_enabled') == 'true'
+    settings.pwa_display_mode = request.form.get('pwa_display_mode', 'default')
+    settings.pwa_custom_name = request.form.get('pwa_custom_name')
+
+    # PWA Icon Upload
+    pwa_icon_file = request.files.get('pwa_custom_icon_file')
+    if pwa_icon_file and pwa_icon_file.filename != '':
+        try:
+            # Reusing UploadService
+            saved_path = UploadService.save_file(pwa_icon_file, subfolder='branding')
+            settings.pwa_custom_icon_url = '/' + saved_path
+        except ValueError as e:
+            flash(f"Error uploading PWA Icon: {e}", 'error')
+
     # --- New Interface Config ---
 
     # Hero Image Upload

@@ -52,6 +52,12 @@ class PlatformSettings(db.Model):
     # Structure: [{"label": "Privacy", "url": "/privacy"}, ...]
     footer_links = db.Column(db.JSON, nullable=True)
 
+    # PWA Configuration
+    pwa_enabled = db.Column(db.Boolean, default=False)
+    pwa_display_mode = db.Column(db.String(20), default="default") # 'default' or 'custom'
+    pwa_custom_name = db.Column(db.String(100), nullable=True)
+    pwa_custom_icon_url = db.Column(db.String(255), nullable=True)
+
     def save(self):
         if not self.id:
             # Ensure singleton
