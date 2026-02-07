@@ -32,6 +32,18 @@ class PlatformSettings(db.Model):
     receipt_format = db.Column(SQLAlchemyEnum(ReceiptFormat), default=ReceiptFormat.A4_Standard, nullable=False)
     receipt_custom_css = db.Column(db.Text, nullable=True)
 
+    # V4: Public Interface Config
+    landing_hero_background_url = db.Column(db.String(255), nullable=True)
+    footer_text = db.Column(db.Text, nullable=True)
+    copyright_text = db.Column(db.String(255), nullable=True)
+
+    # JSON Configs for flexible social media and links
+    # Structure: {"facebook": "url", "twitter": "url", "instagram": "url", "linkedin": "url"}
+    social_media_config = db.Column(db.JSON, nullable=True)
+
+    # Structure: [{"label": "Privacy", "url": "/privacy"}, ...]
+    footer_links = db.Column(db.JSON, nullable=True)
+
     def save(self):
         if not self.id:
             # Ensure singleton

@@ -4,9 +4,11 @@ from security.auth import super_admin_required
 from models import PlatformSettings, SubscriptionPlan, SaaSInvoice, SaaSInvoiceStatus, PaymentMethod, User, Establishment, Announcement, AnnouncementSenderType, AnnouncementTargetAudience, AnnouncementPriority
 from models.saas_config import ReceiptFormat
 from services.pdf_service import PDFService
+from services.upload_service import UploadService
 from config.extensions import db
 from datetime import datetime
 import json
+import os
 
 super_admin_bp = Blueprint('super_admin', __name__, url_prefix='/admin')
 
@@ -83,16 +85,66 @@ def update_settings():
         settings = PlatformSettings()
         db.session.add(settings)
 
+    # General Branding
     settings.app_name = request.form.get('app_name', settings.app_name)
     settings.logo_url = request.form.get('logo_url', settings.logo_url)
     settings.primary_color_hex = request.form.get('primary_color_hex', settings.primary_color_hex)
     settings.secondary_color_hex = request.form.get('secondary_color_hex', settings.secondary_color_hex)
     settings.timezone = request.form.get('timezone', settings.timezone)
+
+    # SEO
     settings.seo_title_template = request.form.get('seo_title_template', settings.seo_title_template)
     settings.seo_meta_desc = request.form.get('seo_meta_desc', settings.seo_meta_desc)
 
-    # Handle maintenance mode checkbox (if not present, it's False)
+    # Maintenance
     settings.is_maintenance_mode = request.form.get('is_maintenance_mode') == 'true'
+
+    # --- New Interface Config ---
+
+    # Hero Image Upload
+    hero_file = request.files.get('landing_hero_background_file')
+    if hero_file and hero_file.filename != '':
+        try:
+            # Save file using UploadService
+            saved_path = UploadService.save_file(hero_file, subfolder='branding')
+            # Assuming 'statics/' is root for web access, path returned is relative like 'statics/uploads/branding/...'
+            # We want URL path, usually relative to static folder or root.
+            # Flask `url_for('static', filename=...)` expects path relative to static folder.
+            # UploadService returns relative path from project root 'statics/uploads/branding/...'
+            # We need to store it so it can be used. If we serve via static route, we need to know the prefix.
+            # Assuming standard structure, let's just store the full relative path for now,
+            # and in template we'll prepend '/' if needed or use `url_for` carefully.
+            # Actually, let's normalize to web path: '/statics/uploads/branding/...'
+            settings.landing_hero_background_url = '/' + saved_path
+        except ValueError as e:
+            flash(f"Error uploading Hero Image: {e}", 'error')
+
+    # Footer Config
+    settings.footer_text = request.form.get('footer_text', settings.footer_text)
+    settings.copyright_text = request.form.get('copyright_text', settings.copyright_text)
+
+    # Social Media (Construct JSON)
+    social_config = {
+        'facebook': request.form.get('social_facebook', ''),
+        'twitter': request.form.get('social_twitter', ''),
+        'instagram': request.form.get('social_instagram', ''),
+        'linkedin': request.form.get('social_linkedin', '')
+    }
+    # Filter empty
+    social_config = {k: v for k, v in social_config.items() if v}
+    settings.social_media_config = social_config
+
+    # Footer Links (Parse JSON)
+    footer_links_str = request.form.get('footer_links_json')
+    if footer_links_str:
+        try:
+            links_json = json.loads(footer_links_str)
+            if isinstance(links_json, list):
+                settings.footer_links = links_json
+            else:
+                 flash("Footer links must be a JSON list of objects.", "warning")
+        except json.JSONDecodeError:
+            flash("Invalid JSON for Footer Links.", "warning")
 
     db.session.commit()
     flash('Settings updated successfully.', 'success')
