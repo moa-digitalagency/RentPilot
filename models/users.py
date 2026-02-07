@@ -29,3 +29,7 @@ class User(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.id)
+
+    @property
+    def is_tenant(self):
+        return bool(self.leases)

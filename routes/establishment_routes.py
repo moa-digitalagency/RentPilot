@@ -5,6 +5,7 @@ from models.establishment import Establishment, Room, Lease, FinancialMode, Esta
 from models.users import User
 from config.extensions import db
 from datetime import datetime
+from services.permission_service import add_co_landlord
 
 establishment_bp = Blueprint('establishment', __name__)
 
@@ -188,3 +189,61 @@ def setup():
         return redirect(url_for('dashboard.dashboard'))
 
     return render_template('establishment_setup.html')
+
+@establishment_bp.route('/establishment/<int:id>/co-owners', methods=['POST'])
+@login_required
+@bailleur_required
+def add_co_owner(id):
+    # Check if current user is an owner (Primary or Secondary? Usually Primary to add others)
+    # Let's restrict to Primary owner for security
+    owner = EstablishmentOwner.query.filter_by(
+        user_id=current_user.id,
+        establishment_id=id,
+        role=EstablishmentOwnerRole.PRIMARY
+    ).first()
+
+    if not owner:
+        abort(403, "Seul le propriétaire principal peut ajouter des co-bailleurs.")
+
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'error': 'Email requis'}), 400
+
+    success, msg = add_co_landlord(id, email)
+    if not success:
+        return jsonify({'error': msg}), 400
+
+    return jsonify({'message': msg})
+
+@establishment_bp.route('/establishment/<int:id>/co-owners/<int:user_id>', methods=['DELETE'])
+@login_required
+@bailleur_required
+def remove_co_owner(id, user_id):
+    # Check if current user is Primary owner
+    owner = EstablishmentOwner.query.filter_by(
+        user_id=current_user.id,
+        establishment_id=id,
+        role=EstablishmentOwnerRole.PRIMARY
+    ).first()
+
+    if not owner:
+        abort(403, "Seul le propriétaire principal peut supprimer des co-bailleurs.")
+
+    # Cannot remove yourself via this route (safety check)
+    if user_id == current_user.id:
+        return jsonify({'error': 'Vous ne pouvez pas vous supprimer vous-même.'}), 400
+
+    target_owner = EstablishmentOwner.query.filter_by(
+        user_id=user_id,
+        establishment_id=id
+    ).first()
+
+    if not target_owner:
+        return jsonify({'error': 'Co-bailleur introuvable.'}), 404
+
+    db.session.delete(target_owner)
+    db.session.commit()
+
+    return jsonify({'message': 'Co-bailleur supprimé.'})

@@ -11,7 +11,7 @@ from models import User
 # Import Blueprints
 from routes import (
     auth_bp, dashboard_bp, establishment_bp, finance_bp,
-    chat_bp, ticket_bp, main_bp, super_admin_bp, public_bp
+    chat_bp, ticket_bp, main_bp, super_admin_bp, public_bp, chore_bp
 )
 
 def create_app():
@@ -44,5 +44,6 @@ def create_app():
     app.register_blueprint(ticket_bp)
     app.register_blueprint(super_admin_bp)
     app.register_blueprint(public_bp)
+    app.register_blueprint(chore_bp)
 
     return app

@@ -7,3 +7,4 @@ from .ticket_routes import ticket_bp
 from .main_routes import main_bp
 from .super_admin_routes import super_admin_bp
 from .public_routes import public_bp
+from .chore_routes import chore_bp
