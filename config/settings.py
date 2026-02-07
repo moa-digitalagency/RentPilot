@@ -31,3 +31,6 @@ class Config:
     # Audited: Moved default credentials to be clearly identified as fallbacks
     SUPER_ADMIN_ID = os.environ.get('SUPER_ADMIN_ID') or 'admin@rentpilot.com'
     SUPER_ADMIN_PASS = os.environ.get('SUPER_ADMIN_PASS') or 'SuperSecretPass123!'
+
+    # APILayer / Geolocation
+    GEO_API_KEY = os.environ.get('GEO_API_KEY')

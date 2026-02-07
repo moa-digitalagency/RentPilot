@@ -8,6 +8,13 @@
 """
 from config.extensions import db
 from datetime import datetime
+from sqlalchemy import Enum as SQLAlchemyEnum
+import enum
+
+class AdStatus(enum.Enum):
+    PENDING = 'Pending'
+    APPROVED = 'Approved'
+    REJECTED = 'Rejected'
 
 class Ad(db.Model):
     """
@@ -23,6 +30,19 @@ class Ad(db.Model):
     description = db.Column(db.Text, nullable=True)
     available_from = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Status Management
+    status = db.Column(SQLAlchemyEnum(AdStatus), default=AdStatus.PENDING, nullable=False)
+    rejection_reason = db.Column(db.String(255), nullable=True)
+
+    # Location & Filters
+    city = db.Column(db.String(100), nullable=True)
+    country = db.Column(db.String(100), nullable=True)
+    property_type = db.Column(db.String(50), default='Appartement') # e.g. Appartement, Maison, Studio
+    is_furnished = db.Column(db.Boolean, default=False)
+    has_syndic = db.Column(db.Boolean, default=False)
+
+    # Kept for backward compatibility but status should be primary check
     is_active = db.Column(db.Boolean, default=True)
 
     # Contact Configuration

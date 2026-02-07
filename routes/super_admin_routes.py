@@ -10,6 +10,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from security.auth import super_admin_required
 from models import PlatformSettings, SubscriptionPlan, SaaSInvoice, SaaSInvoiceStatus, PaymentMethod, User, Establishment, Announcement, AnnouncementSenderType, AnnouncementTargetAudience, AnnouncementPriority
+from models import Ad, AdStatus
 from models.saas_config import ReceiptFormat
 from services.pdf_service import PDFService
 from services.upload_service import UploadService
@@ -291,3 +292,39 @@ def send_announcement():
 
     flash('Announcement sent.', 'success')
     return redirect(url_for('super_admin.dashboard'))
+
+# --- ADS MODERATION ---
+
+@super_admin_bp.route('/ads/pending', methods=['GET'])
+@login_required
+@super_admin_required
+def list_pending_ads():
+    ads = Ad.query.filter(Ad.status == AdStatus.PENDING).order_by(Ad.created_at.asc()).all()
+    return render_template('admin/ads_review.html', ads=ads)
+
+@super_admin_bp.route('/ads/<int:ad_id>/approve', methods=['POST'])
+@login_required
+@super_admin_required
+def approve_ad(ad_id):
+    ad = Ad.query.get_or_404(ad_id)
+    ad.status = AdStatus.APPROVED
+    ad.is_active = True
+    db.session.commit()
+    flash(f"Annonce '{ad.title}' approuvée.", "success")
+    return redirect(url_for('super_admin.list_pending_ads'))
+
+@super_admin_bp.route('/ads/<int:ad_id>/reject', methods=['POST'])
+@login_required
+@super_admin_required
+def reject_ad(ad_id):
+    ad = Ad.query.get_or_404(ad_id)
+    ad.status = AdStatus.REJECTED
+    ad.is_active = False
+
+    reason = request.form.get('reason', '')
+    if reason:
+        ad.rejection_reason = reason
+
+    db.session.commit()
+    flash(f"Annonce '{ad.title}' rejetée.", "warning")
+    return redirect(url_for('super_admin.list_pending_ads'))

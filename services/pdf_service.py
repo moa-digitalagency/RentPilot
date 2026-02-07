@@ -16,7 +16,7 @@ from services.qr_service import QRService
 from models.saas_config import PlatformSettings, ReceiptFormat
 from models.finance import Transaction, SaaSInvoice, SaaSInvoiceStatus
 from models.users import User
-from models.establishment import Room
+from models.establishment import Room, Lease
 from datetime import datetime
 
 class PDFService:
@@ -278,6 +278,85 @@ class PDFService:
         for stat in stats:
             c.drawString(3 * cm, y, "- " + stat)
             y -= 1 * cm
+
+        c.showPage()
+        c.save()
+        buffer.seek(0)
+        return buffer
+
+    @staticmethod
+    def generate_lease_pdf(lease: Lease) -> io.BytesIO:
+        """
+        Generates a generic Lease PDF (Contract).
+        """
+        buffer = io.BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+
+        tenant = lease.tenant
+        room = lease.room
+        establishment = room.establishment
+
+        # Title
+        c.setFont("Helvetica-Bold", 20)
+        c.drawCentredString(width / 2, height - 3 * cm, "CONTRAT DE BAIL")
+
+        c.setFont("Helvetica", 12)
+        c.drawCentredString(width / 2, height - 4 * cm, f"Référence: LEASE-{lease.id}")
+
+        y = height - 6 * cm
+        line_height = 0.8 * cm
+
+        # Parties
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(2 * cm, y, "ENTRE LES SOUSSIGNÉS:")
+        y -= 1.5 * cm
+
+        c.setFont("Helvetica", 12)
+        c.drawString(2 * cm, y, "LE BAILLEUR (Propriétaire):")
+        # Assuming we can get owner info, but EstablishmentOwner links to User.
+        # For now, we use generic text or fetch if available.
+        # Simple implementation:
+        c.drawString(2 * cm, y - line_height, "Représenté par l'administration du bien (RentPilot)")
+        y -= 2.5 * cm
+
+        c.drawString(2 * cm, y, "ET LE PRENEUR (Locataire):")
+        c.drawString(2 * cm, y - line_height, f"Nom/Email: {tenant.email}")
+        if tenant.is_identity_verified:
+             c.drawString(2 * cm, y - 2*line_height, "(Identité Vérifiée)")
+        y -= 3 * cm
+
+        # Object
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(2 * cm, y, "OBJET DU CONTRAT:")
+        y -= 1.5 * cm
+
+        c.setFont("Helvetica", 12)
+        c.drawString(2 * cm, y, "Location d'une chambre meublée située à:")
+        c.drawString(2 * cm, y - line_height, f"Adresse: {establishment.address}")
+        c.drawString(2 * cm, y - 2*line_height, f"Chambre: {room.name}")
+        y -= 3 * cm
+
+        # Conditions
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(2 * cm, y, "CONDITIONS FINANCIERES:")
+        y -= 1.5 * cm
+
+        c.setFont("Helvetica", 12)
+        c.drawString(2 * cm, y, f"Loyer Mensuel: {room.base_price} EUR")
+        c.drawString(2 * cm, y - line_height, "Charges: Selon consommation (ou forfait défini)")
+        c.drawString(2 * cm, y - 2*line_height, f"Date d'effet: {lease.start_date.strftime('%d/%m/%Y')}")
+        if lease.end_date:
+            c.drawString(2 * cm, y - 3*line_height, f"Date de fin: {lease.end_date.strftime('%d/%m/%Y')}")
+
+        y -= 5 * cm
+
+        # Signatures
+        c.drawString(2 * cm, y, "Fait à ______________________, le ______________________")
+        y -= 2 * cm
+
+        c.drawString(3 * cm, y, "Signature du Bailleur")
+        c.drawString(12 * cm, y, "Signature du Locataire")
 
         c.showPage()
         c.save()

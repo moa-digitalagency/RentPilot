@@ -26,6 +26,11 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     avatar = db.Column(db.String(255), nullable=True)
+
+    # Identity Verification
+    identity_card_url = db.Column(db.String(255), nullable=True)
+    is_identity_verified = db.Column(db.Boolean, default=False)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships (using string references to avoid circular imports)

@@ -6,7 +6,7 @@
 * Fait par : Aisance KALONJI, www.aisancekalonji.com
 * Auditer par : La CyberConfiance, www.cyberconfiance.com
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify, send_file
 from flask_login import login_required, current_user
 from security.auth import bailleur_required
 from models.establishment import Establishment, Room, Lease, FinancialMode, EstablishmentOwner, EstablishmentOwnerRole
@@ -14,6 +14,8 @@ from models.users import User
 from config.extensions import db
 from datetime import datetime
 from services.permission_service import add_co_landlord
+from services.pdf_service import PDFService
+import io
 
 establishment_bp = Blueprint('establishment', __name__)
 
@@ -73,7 +75,7 @@ def update_establishment(id):
 
     # Fetch co-owners
     co_owners = est.owner_associations
-    return render_template('establishment_settings.html', establishment=est, co_owners=co_owners)
+    return render_template('establishment_settings.html', establishment=est, co_owners=co_owners, datetime=datetime)
 
 @establishment_bp.route('/establishment/<int:id>/add-room', methods=['POST'])
 @login_required
@@ -257,3 +259,29 @@ def remove_co_owner(id, user_id):
     db.session.commit()
 
     return jsonify({'message': 'Co-bailleur supprimé.'})
+
+@establishment_bp.route('/lease/<int:lease_id>/generate', methods=['GET'])
+@login_required
+@bailleur_required
+def generate_lease(lease_id):
+    lease = Lease.query.get_or_404(lease_id)
+    room = lease.room
+    establishment = room.establishment
+
+    # Check if current user is an owner of this establishment
+    is_owner = EstablishmentOwner.query.filter_by(
+        user_id=current_user.id,
+        establishment_id=establishment.id
+    ).first()
+
+    if not is_owner:
+        abort(403)
+
+    pdf_buffer = PDFService.generate_lease_pdf(lease)
+
+    return send_file(
+        pdf_buffer,
+        as_attachment=True,
+        download_name=f'lease_{lease.id}.pdf',
+        mimetype='application/pdf'
+    )
