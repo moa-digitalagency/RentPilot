@@ -12,6 +12,8 @@ from flask import current_app
 
 class GeoService:
     BASE_URL = "https://api.apilayer.com/geo/city/search"
+    IP_URL = "https://api.apilayer.com/ip_to_location"
+
     # Note: The exact URL structure depends on the specific API from APILayer (there are many).
     # Assuming standard "Geo API" search.
     # If the user meant 'ipstack' or similar on APILayer, the endpoint might differ.
@@ -90,10 +92,28 @@ class GeoService:
     def get_client_ip_info(ip_address):
         """
         Get location info from IP address.
-        Uses a free service or APILayer's IP to Location if available.
+        Uses APILayer's IP to Location if available, or falls back to ipapi.co.
         """
-        # For this demo, we can use a free public API like ipapi.co
-        # In production, use the paid APILayer key if it supports IP lookup.
+        api_key = GeoService.get_api_key()
+
+        # Try APILayer first
+        if api_key:
+            try:
+                headers = {"apikey": api_key}
+                params = {"ip": ip_address}
+                response = requests.get(GeoService.IP_URL, headers=headers, params=params, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    # Example structure: {"city": "Paris", "country_name": "France", ...}
+                    return {
+                        'city': data.get('city'),
+                        'country': data.get('country_name') or data.get('country'),
+                        'country_code': data.get('country_code')
+                    }
+            except Exception as e:
+                print(f"APILayer IP Error: {e}")
+
+        # Fallback to ipapi.co (Free, no key)
         try:
             response = requests.get(f"https://ipapi.co/{ip_address}/json/", timeout=3)
             if response.status_code == 200:
@@ -103,6 +123,7 @@ class GeoService:
                     'country': data.get('country_name'),
                     'country_code': data.get('country_code')
                 }
-        except:
-            pass
+        except Exception as e:
+            print(f"IPAPI Fallback Error: {e}")
+
         return None
