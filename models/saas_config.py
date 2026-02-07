@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Source file: saas_config.py
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from config.extensions import db
 from sqlalchemy.sql import func
 from sqlalchemy import Enum as SQLAlchemyEnum

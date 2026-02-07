@@ -1,3 +1,11 @@
+
+/*
+* Nom de l'application : RentPilot
+* Description : JavaScript logic for charts.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+*/
 // Config Chart.js pour les dépenses
 
 function initExpensesChart(canvasId, dataLabels, dataValues) {

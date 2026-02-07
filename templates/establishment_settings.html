@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for establishment_settings page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "base.html" %}
 
 {% block title %}Paramètres - RentPilot{% endblock %}
@@ -10,6 +18,7 @@
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Configuration de l'Établissement</h2>
 
         <form action="{{ url_for('establishment.update_establishment', id=establishment.id) }}" method="POST" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="col-span-2">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Adresse complète</label>
@@ -100,11 +109,15 @@
     document.getElementById('add-co-owner-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = this.elements.email.value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         try {
             const response = await fetch('{{ url_for("establishment.add_co_owner", id=establishment.id) }}', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ email: email })
             });
 
@@ -123,10 +136,14 @@
 
     async function removeCoOwner(userId) {
         if (!confirm("Êtes-vous sûr de vouloir retirer ce co-bailleur ?")) return;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         try {
             const response = await fetch(`/establishment/{{ establishment.id }}/co-owners/${userId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
             });
 
             if (response.ok) {

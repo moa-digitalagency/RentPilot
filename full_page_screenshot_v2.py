@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Source file: full_page_screenshot_v2.py
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from playwright.sync_api import sync_playwright
 
 def run():

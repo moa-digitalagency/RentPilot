@@ -1,8 +1,17 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for base page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}{{ _('app.title') }}{% endblock %}</title>
 
     <!-- Fonts -->

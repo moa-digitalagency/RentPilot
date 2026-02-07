@@ -1,7 +1,14 @@
+"""
+* Nom de l'application : RentPilot
+* Description : Application entry point.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from flask import Flask
 from flask_login import LoginManager
 from config.settings import Config
-from config.extensions import db, configure_uploads
+from config.extensions import db, configure_uploads, csrf # Security Fix: Import csrf
 from services.i18n_service import i18n
 from routes.context_processors import register_context_processors
 
@@ -21,6 +28,7 @@ def create_app():
     configure_uploads(app)
 
     db.init_app(app)
+    csrf.init_app(app) # Security Fix: Enable CSRF Protection
     i18n.init_app(app)
 
     register_context_processors(app)
@@ -45,5 +53,16 @@ def create_app():
     app.register_blueprint(super_admin_bp)
     app.register_blueprint(public_bp)
     app.register_blueprint(chore_bp)
+
+    @app.after_request
+    def set_security_headers(response):
+        """Add security headers to every response."""
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        # CSP: To be configured carefully, currently report-only or minimal to avoid breakage
+        # response.headers['Content-Security-Policy'] = "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';"
+        return response
 
     return app

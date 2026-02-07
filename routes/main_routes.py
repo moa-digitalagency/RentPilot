@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Routes for main module.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from flask import Blueprint, render_template, redirect, url_for, session, request, jsonify
 from flask_login import current_user
 from services.i18n_service import i18n

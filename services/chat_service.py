@@ -1,3 +1,11 @@
+
+"""
+* Nom de l'application : RentPilot
+* Description : Service logic for chat module.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+"""
 from config.extensions import db
 from models.communication import Message
 from datetime import datetime

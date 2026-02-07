@@ -1,3 +1,11 @@
+
+<!--
+* Nom de l'application : RentPilot
+* Description : Template for dashboard page.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
 {% extends "admin/layout_admin.html" %}
 
 {% block title %}Dashboard - Admin RentPilot{% endblock %}
@@ -42,6 +50,7 @@
             <span class="mr-2">📢</span> Envoyer une Annonce
         </h3>
         <form action="{{ url_for('super_admin.send_announcement') }}" method="POST" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
                 <input type="text" name="title" required class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
