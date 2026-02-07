@@ -14,9 +14,9 @@ L'application est construite sur une architecture **Monolithique Modulaire** uti
 | Composant | Technologie | Description |
 | :--- | :--- | :--- |
 | **Backend** | Python 3.8+, Flask | Framework web léger et extensible. |
-| **ORM** | SQLAlchemy | Abstraction de la base de données (supporte SQLite/PostgreSQL). |
+| **ORM** | SQLAlchemy | Abstraction de la base de données (supporte PostgreSQL). |
 | **Frontend** | Jinja2, TailwindCSS, Alpine.js | Templates rendus côté serveur avec interactivité légère via JS. |
-| **Base de Données** | SQLite (Dev), PostgreSQL (Prod) | Stockage relationnel robuste. |
+| **Base de Données** | PostgreSQL | Stockage relationnel robuste. |
 | **Authentification** | Flask-Login | Gestion des sessions utilisateurs standards. |
 | **Génération PDF** | ReportLab | Création dynamique de factures et reçus. |
 | **Tests E2E** | Playwright | Automatisation des tests d'interface utilisateur. |

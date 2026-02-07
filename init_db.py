@@ -6,6 +6,7 @@
 * Fait par : Aisance KALONJI, www.aisancekalonji.com
 * Auditer par : La CyberConfiance, www.cyberconfiance.com
 """
+import os
 from config.init_app import create_app
 from config.extensions import db
 from models import (
@@ -23,7 +24,21 @@ from sqlalchemy import inspect, text
 def init_db():
     app = create_app()
     with app.app_context():
-        print(f"Connecting to database: {app.config['SQLALCHEMY_DATABASE_URI']}")
+        # Ensure upload directories exist
+        upload_folder = app.config.get('UPLOAD_FOLDER')
+        if upload_folder and not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+            print(f"Created upload folder: {upload_folder}")
+
+        upload_chat_folder = app.config.get('UPLOAD_FOLDER_CHAT')
+        if upload_chat_folder and not os.path.exists(upload_chat_folder):
+            os.makedirs(upload_chat_folder)
+            print(f"Created chat upload folder: {upload_chat_folder}")
+
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        print(f"Connecting to database: {db_uri}")
+        if not db_uri.startswith('postgresql'):
+             raise ValueError("RentPilot requires PostgreSQL. Please check your configuration.")
 
         inspector = inspect(db.engine)
         existing_tables = inspector.get_table_names()
@@ -73,9 +88,7 @@ def init_db():
                                  # Infer safe default based on type for migration
                                  type_str = str(col_type).upper()
                                  if "BOOLEAN" in type_str:
-                                     default_clause = " DEFAULT FALSE" # Postgres/SQLite boolean false
-                                     if "SQLITE" in str(db.engine.url).upper():
-                                         default_clause = " DEFAULT 0"
+                                     default_clause = " DEFAULT FALSE" # Postgres boolean false
                                  elif "INT" in type_str:
                                      default_clause = " DEFAULT 0"
                                  else:

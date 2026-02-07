@@ -10,7 +10,7 @@ import os
 
 class Config:
     # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI') or 'sqlite:///rentpilot.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DB_URI') or 'postgresql://rentpilot:rentpilot@localhost:5432/rentpilot'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Security
