@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Tâches & Planning - RentPilot{% endblock %}
+
+{% block content %}
+<section class="space-y-8 animate-fade-in pb-20">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Tâches Ménagères</h1>
+            <p class="text-gray-500">Gérez le planning et validez les tâches.</p>
+        </div>
+        <!-- Floating + Button (for mobile mostly, but visible here too) -->
+        <button onclick="openAddChoreModal()" class="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-105">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        </button>
+    </div>
+
+    <!-- 1. Pending Validation (Urgent) -->
+    {% if tasks_to_validate %}
+    <div class="bg-indigo-50 border border-indigo-100 rounded-3xl p-6">
+        <h2 class="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
+            <span class="bg-indigo-200 text-indigo-700 p-1 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </span>
+            En attente de votre validation
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for task in tasks_to_validate %}
+            <div id="validation-card-{{ task.id }}" class="bg-white p-4 rounded-2xl shadow-sm border border-indigo-100 flex flex-col gap-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="font-bold text-gray-900">{{ task.chore_type.name }}</h3>
+                        <p class="text-xs text-gray-500">Fait le {{ task.due_date.strftime('%d/%m') }}</p>
+                    </div>
+                    <!-- Assignee Avatar Placeholder -->
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+                        U{{ task.assigned_user_id }}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-auto">
+                    <button onclick="validateTask({{ task.id }})" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Confirmer
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 2. Calendar -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <div id="calendar" class="min-h-[600px]"></div>
+    </div>
+
+    <!-- 3. Pre-established Tasks List -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-gray-900">Tâches Récurrentes</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for chore in chore_types %}
+            <div class="p-4 rounded-2xl border border-gray-100 bg-gray-50/50 flex items-center gap-4 hover:border-indigo-200 transition-colors">
+                <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-xl">
+                    {{ chore.icon or '🧹' }}
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm">{{ chore.name }}</h3>
+                    <p class="text-xs text-gray-500">{{ chore.frequency_days }} jours • {{ 'Rotatif' if chore.is_rotating else 'Fixe' }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-full text-center py-8 text-gray-400 text-sm">
+                Aucune tâche configurée. Ajoutez-en une !
+            </div>
+            {% endfor %}
+
+            <!-- Add Button Card -->
+            <button onclick="openAddChoreModal()" class="p-4 rounded-2xl border-2 border-dashed border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 text-gray-400 hover:text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span class="font-bold text-sm">Ajouter</span>
+            </button>
+        </div>
+    </div>
+
+</section>
+
+<!-- Add Chore Modal -->
+<div id="add-chore-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onclick="closeAddChoreModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Nouvelle Tâche</h3>
+        <form id="add-chore-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Nom</label>
+                <input type="text" name="name" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Fréquence (jours)</label>
+                <input type="number" name="frequency_days" value="7" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_rotating" id="is_rotating" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300">
+                <label for="is_rotating" class="text-sm font-medium text-gray-700">Rotation entre les colocs</label>
+            </div>
+            <div class="pt-4 flex justify-end gap-2">
+                <button type="button" onclick="closeAddChoreModal()" class="px-4 py-2 text-gray-500 font-bold hover:text-gray-700">Annuler</button>
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-indigo-700">Créer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            locale: 'fr',
+            events: '{{ url_for("chore.get_calendar_events") }}',
+            eventContent: function(arg) {
+                // Custom rendering
+                let status = arg.event.extendedProps.status;
+                let colorClass = 'bg-gray-100 text-gray-600 border-gray-200'; // Default Future
+
+                if (status === 'Completed') {
+                    colorClass = 'bg-emerald-100 text-emerald-700 border-emerald-200'; // Green
+                } else if (status === 'Done_Waiting_Validation') {
+                    colorClass = 'bg-blue-100 text-blue-700 border-blue-200'; // Blue
+                } else {
+                    // Pending
+                    // Check if overdue? Simple logic for now: Orange
+                    colorClass = 'bg-orange-100 text-orange-700 border-orange-200';
+                }
+
+                let html = `
+                    <div class="px-2 py-1 rounded-md text-xs font-bold border ${colorClass} w-full overflow-hidden truncate">
+                        ${arg.event.title}
+                        ${status === 'Done_Waiting_Validation' ? `<span class="block text-[10px] opacity-75">${arg.event.extendedProps.validation_status}</span>` : ''}
+                    </div>
+                `;
+                return { html: html };
+            },
+            eventClick: function(info) {
+                // Handle click - maybe show details or validation modal
+                // For now, assume if it's assigned to me and pending, show "Done" action
+                // But simplified for this task
+                if (info.event.extendedProps.status === 'Pending' && info.event.extendedProps.assigned_user_id == {{ current_user.id }}) {
+                    if (confirm("Marquer comme fait ?")) {
+                        markTaskDone(info.event.id);
+                    }
+                }
+            }
+        });
+        calendar.render();
+        window.calendar = calendar; // expose for refresh
+    });
+
+    async function validateTask(eventId) {
+        try {
+            const response = await fetch(`/chores/${eventId}/confirm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                // Confetti!
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                // Remove card
+                const card = document.getElementById(`validation-card-${eventId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+                }
+
+                // Refresh calendar
+                if (window.calendar) window.calendar.refetchEvents();
+            } else {
+                alert("Erreur lors de la validation");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Erreur réseau");
+        }
+    }
+
+    async function markTaskDone(eventId) {
+        try {
+            const response = await fetch(`/chores/${eventId}/done`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                confetti({ particleCount: 50, spread: 45, origin: { y: 0.7 } });
+                if (window.calendar) window.calendar.refetchEvents();
+            } else {
+                alert("Erreur.");
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function openAddChoreModal() {
+        document.getElementById('add-chore-modal').classList.remove('hidden');
+    }
+
+    function closeAddChoreModal() {
+        document.getElementById('add-chore-modal').classList.add('hidden');
+    }
+
+    document.getElementById('add-chore-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        data.is_rotating = formData.get('is_rotating') === 'on';
+        data.frequency_days = parseInt(data.frequency_days);
+
+        try {
+            const response = await fetch('{{ url_for("chore.create_chore_type") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                closeAddChoreModal();
+                window.location.reload(); // Simple reload to show new type
+            } else {
+                alert("Erreur");
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    });
+</script>
+{% endblock %}

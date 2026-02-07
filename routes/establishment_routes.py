@@ -63,7 +63,9 @@ def update_establishment(id):
         flash('Establishment updated', 'success')
         return redirect(url_for('establishment.update_establishment', id=id))
 
-    return render_template('establishment/update.html', establishment=est)
+    # Fetch co-owners
+    co_owners = est.owner_associations
+    return render_template('establishment_settings.html', establishment=est, co_owners=co_owners)
 
 @establishment_bp.route('/establishment/<int:id>/add-room', methods=['POST'])
 @login_required
