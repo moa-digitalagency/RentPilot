@@ -7,6 +7,7 @@
 * Auditer par : La CyberConfiance, www.cyberconfiance.com
 """
 import os
+import sys
 from config.init_app import create_app
 from config.extensions import db
 from models import (
@@ -37,17 +38,18 @@ def init_db():
 
         db_uri = app.config['SQLALCHEMY_DATABASE_URI']
         print(f"Connecting to database: {db_uri}")
+
+        # Check for PostgreSQL requirement, but allow override for testing/dev if specified
         if not db_uri.startswith('postgresql'):
-             raise ValueError("RentPilot requires PostgreSQL. Please check your configuration.")
+             if not os.environ.get('ALLOW_UNSAFE_DB'):
+                raise ValueError("RentPilot requires PostgreSQL. Please check your configuration or set ALLOW_UNSAFE_DB=1 for dev/testing.")
+             else:
+                print("WARNING: Running with non-PostgreSQL database. Some features or migrations may fail.")
 
         inspector = inspect(db.engine)
         existing_tables = inspector.get_table_names()
 
         # Iterate all models to check/create tables
-        # We manually list them or inspect registry. Here we use the registry for robustness.
-        # But for safety and specific imports above, we can rely on `db.Model.registry.mappers`
-        # ensuring all imported models are registered.
-
         mapped_classes = [mapper.class_ for mapper in db.Model.registry.mappers]
         processed_tables = set()
 
@@ -80,22 +82,28 @@ def init_db():
 
                             # Determine column type safely
                             col_type = column.type.compile(db.engine.dialect)
+                            type_str = str(col_type).upper()
 
                             # Construct ALTER TABLE
                             # Handle default value if NOT NULL is required to prevent errors
                             default_clause = ""
                             if not column.nullable and column.server_default is None:
                                  # Infer safe default based on type for migration
-                                 type_str = str(col_type).upper()
                                  if "BOOLEAN" in type_str:
-                                     default_clause = " DEFAULT FALSE" # Postgres boolean false
-                                 elif "INT" in type_str:
+                                     default_clause = " DEFAULT FALSE" # Postgres/SQL boolean false
+                                 elif "INT" in type_str or "INTEGER" in type_str:
                                      default_clause = " DEFAULT 0"
+                                 elif "FLOAT" in type_str or "NUMERIC" in type_str or "REAL" in type_str:
+                                     default_clause = " DEFAULT 0.0"
+                                 elif "DATE" in type_str:
+                                     default_clause = " DEFAULT '2000-01-01'"
                                  else:
+                                     # Text, Varchar, etc.
                                      default_clause = " DEFAULT ''"
                             elif column.server_default:
                                 default_clause = f" DEFAULT {column.server_default.arg}"
 
+                            # Syntax varies by DB, but standard SQL usually works for ADD COLUMN
                             sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{column.name}" {col_type}{default_clause}'
 
                             try:
@@ -106,18 +114,20 @@ def init_db():
                             except Exception as e:
                                 print(f"Failed to add column '{column.name}' to '{table_name}': {e}")
 
-            # Specific migration for Ads room_id nullable (PostgreSQL)
-            # This is a bit risky if generic logic didn't pick it up or if we are not on Postgres
+            # Specific migration for Ads room_id nullable (PostgreSQL only)
             try:
                 if 'ads' in existing_tables:
                     # Check if we are on Postgres
                     if str(db.engine.url).startswith('postgresql'):
+                        # Check if it is already nullable?
+                        # Postgres ALTER COLUMN ... DROP NOT NULL is idempotent if it's already nullable (usually).
                         sql_alter = 'ALTER TABLE "ads" ALTER COLUMN "room_id" DROP NOT NULL'
                         with db.engine.connect() as conn:
                              conn.execute(text(sql_alter))
                              conn.commit()
                         print("Successfully altered 'ads.room_id' to allow NULL (PostgreSQL).")
             except Exception as e:
+                # If column doesn't exist or other error
                 print(f"Failed to alter 'ads.room_id' constraint: {e}")
 
         print("Database schema check complete.")

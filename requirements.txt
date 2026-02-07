@@ -9,3 +9,4 @@ reportlab
 qrcode
 Pillow
 flask-wtf
+requests
