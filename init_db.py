@@ -11,7 +11,10 @@ from config.extensions import db
 from models import (
     User, Establishment, Room, Lease, UserRole, FinancialMode,
     ChatRoom, ChannelType, PlatformSettings, SubscriptionPlan, ReceiptFormat,
-    EstablishmentOwner, EstablishmentOwnerRole
+    EstablishmentOwner, EstablishmentOwnerRole,
+    Invoice, Transaction, PaymentProof, ExpenseType, ValidationStatus, SaaSInvoice, SaaSInvoiceStatus, PaymentMethod,
+    Message, MessageType, Announcement, AnnouncementSenderType, AnnouncementTargetAudience, AnnouncementPriority,
+    Ad, Request, Ticket, ChoreType, ChoreEvent, ChoreValidation, ChoreStatus
 )
 from security.pwd_tools import hash_password
 from datetime import date
@@ -25,47 +28,72 @@ def init_db():
         inspector = inspect(db.engine)
         existing_tables = inspector.get_table_names()
 
+        # Iterate all models to check/create tables
+        # We manually list them or inspect registry. Here we use the registry for robustness.
+        # But for safety and specific imports above, we can rely on `db.Model.registry.mappers`
+        # ensuring all imported models are registered.
+
+        mapped_classes = [mapper.class_ for mapper in db.Model.registry.mappers]
+        processed_tables = set()
+
         if not existing_tables:
             print("No tables found. Creating all tables...")
             db.create_all()
         else:
-            print("Tables found. Checking for migrations...")
-            # Ensure all tables exist (in case of new models)
+            print("Tables found. Running generic migration check...")
+            # Create any missing tables (e.g. new models)
             db.create_all()
 
-            # Migration for PlatformSettings PWA columns
-            if 'platform_settings' in existing_tables:
-                columns = [c['name'] for c in inspector.get_columns('platform_settings')]
+            # Check existing tables for missing columns
+            for model_class in mapped_classes:
+                if not hasattr(model_class, '__tablename__'):
+                    continue
 
-                # Check and add pwa_enabled
-                if 'pwa_enabled' not in columns:
-                    print("Migrating: Adding pwa_enabled column to platform_settings")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_enabled BOOLEAN DEFAULT 0"))
-                        conn.commit()
+                table_name = model_class.__tablename__
+                if table_name in processed_tables:
+                    continue
+                processed_tables.add(table_name)
 
-                # Check and add pwa_display_mode
-                if 'pwa_display_mode' not in columns:
-                    print("Migrating: Adding pwa_display_mode column to platform_settings")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_display_mode VARCHAR(20) DEFAULT 'default'"))
-                        conn.commit()
+                if table_name in existing_tables:
+                    # Get existing columns in DB
+                    existing_columns = [c['name'] for c in inspector.get_columns(table_name)]
 
-                # Check and add pwa_custom_name
-                if 'pwa_custom_name' not in columns:
-                    print("Migrating: Adding pwa_custom_name column to platform_settings")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_custom_name VARCHAR(100)"))
-                        conn.commit()
+                    # Iterate model columns
+                    for column in model_class.__table__.columns:
+                        if column.name not in existing_columns:
+                            print(f"Migrating: Adding column '{column.name}' to table '{table_name}'")
 
-                # Check and add pwa_custom_icon_url
-                if 'pwa_custom_icon_url' not in columns:
-                    print("Migrating: Adding pwa_custom_icon_url column to platform_settings")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_custom_icon_url VARCHAR(255)"))
-                        conn.commit()
+                            # Determine column type safely
+                            col_type = column.type.compile(db.engine.dialect)
 
-        print("Database schema is up to date.")
+                            # Construct ALTER TABLE
+                            # Handle default value if NOT NULL is required to prevent errors
+                            default_clause = ""
+                            if not column.nullable and column.server_default is None:
+                                 # Infer safe default based on type for migration
+                                 type_str = str(col_type).upper()
+                                 if "BOOLEAN" in type_str:
+                                     default_clause = " DEFAULT FALSE" # Postgres/SQLite boolean false
+                                     if "SQLITE" in str(db.engine.url).upper():
+                                         default_clause = " DEFAULT 0"
+                                 elif "INT" in type_str:
+                                     default_clause = " DEFAULT 0"
+                                 else:
+                                     default_clause = " DEFAULT ''"
+                            elif column.server_default:
+                                default_clause = f" DEFAULT {column.server_default.arg}"
+
+                            sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{column.name}" {col_type}{default_clause}'
+
+                            try:
+                                with db.engine.connect() as conn:
+                                    conn.execute(text(sql))
+                                    conn.commit()
+                                print(f"Successfully added column '{column.name}' to '{table_name}'")
+                            except Exception as e:
+                                print(f"Failed to add column '{column.name}' to '{table_name}': {e}")
+
+        print("Database schema check complete.")
 
         # Seed Platform Settings
         if not PlatformSettings.query.first():

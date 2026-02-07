@@ -146,9 +146,11 @@ def run_e2e_tests():
         time.sleep(1)
 
         try:
-            page.fill('input[name="primary_color_hex"]', '#FF0000')
+            # Color input can be picky, use lower case or evaluate
+            page.fill('input[name="primary_color_hex"]', '#ff0000')
+            # Fix toggle click (click the visual div, not the hidden input)
             if not page.is_checked('input[name="is_maintenance_mode"]'):
-                page.check('input[name="is_maintenance_mode"]')
+                page.click('input[name="is_maintenance_mode"] + div')
             page.click('button:has-text("Enregistrer")')
             time.sleep(1)
         except Exception as e:
@@ -191,17 +193,19 @@ def run_e2e_tests():
 
         try:
             # Wizard navigation
-            # Check if we are on step 1 (Look for "Étape 1")
-            # If buttons exist, click them.
-            if page.locator('button[onclick="nextStep(2)"]').is_visible():
-                page.click('button[onclick="nextStep(2)"]')
-                time.sleep(0.5)
-            if page.locator('button[onclick="nextStep(3)"]').is_visible():
-                page.click('button[onclick="nextStep(3)"]')
-                time.sleep(0.5)
+            # Use text selectors to avoid ambiguity between Next and Back buttons
+            # And wait for transitions
+            if page.is_visible('#step-1-content'):
+                page.click('#step-1-content button:has-text("Continuer")')
+                page.wait_for_selector('#step-2-content', state='visible')
+
+            if page.is_visible('#step-2-content'):
+                page.click('#step-2-content button:has-text("Continuer")')
+                page.wait_for_selector('#step-3-content', state='visible')
 
             page.fill('#new-expense-input', 'Jardinage')
-            page.click('button:has-text("Ajouter")')
+            # Use specific button for custom expense
+            page.click('button[onclick="addCustomExpense()"]')
             time.sleep(0.5)
         except Exception as e:
             print(f"   [Warning] Setup wizard navigation failed: {e}")
