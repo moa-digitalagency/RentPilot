@@ -15,19 +15,57 @@ from models import (
 )
 from security.pwd_tools import hash_password
 from datetime import date
+from sqlalchemy import inspect, text
 
 def init_db():
     app = create_app()
     with app.app_context():
         print(f"Connecting to database: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
-        # Drop all tables
-        db.drop_all()
-        print("Dropped all tables.")
+        inspector = inspect(db.engine)
+        existing_tables = inspector.get_table_names()
 
-        # Create all tables
-        db.create_all()
-        print("Created all tables.")
+        if not existing_tables:
+            print("No tables found. Creating all tables...")
+            db.create_all()
+        else:
+            print("Tables found. Checking for migrations...")
+            # Ensure all tables exist (in case of new models)
+            db.create_all()
+
+            # Migration for PlatformSettings PWA columns
+            if 'platform_settings' in existing_tables:
+                columns = [c['name'] for c in inspector.get_columns('platform_settings')]
+
+                # Check and add pwa_enabled
+                if 'pwa_enabled' not in columns:
+                    print("Migrating: Adding pwa_enabled column to platform_settings")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_enabled BOOLEAN DEFAULT 0"))
+                        conn.commit()
+
+                # Check and add pwa_display_mode
+                if 'pwa_display_mode' not in columns:
+                    print("Migrating: Adding pwa_display_mode column to platform_settings")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_display_mode VARCHAR(20) DEFAULT 'default'"))
+                        conn.commit()
+
+                # Check and add pwa_custom_name
+                if 'pwa_custom_name' not in columns:
+                    print("Migrating: Adding pwa_custom_name column to platform_settings")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_custom_name VARCHAR(100)"))
+                        conn.commit()
+
+                # Check and add pwa_custom_icon_url
+                if 'pwa_custom_icon_url' not in columns:
+                    print("Migrating: Adding pwa_custom_icon_url column to platform_settings")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE platform_settings ADD COLUMN pwa_custom_icon_url VARCHAR(255)"))
+                        conn.commit()
+
+        print("Database schema is up to date.")
 
         # Seed Platform Settings
         if not PlatformSettings.query.first():
@@ -63,117 +101,120 @@ def init_db():
             db.session.commit()
             print("Initialized Subscription Plans.")
 
-        # Seed Data
-        # 1 Bailleur (Landlord)
-        landlord = User(
-            role=UserRole.BAILLEUR,
-            email='landlord@demo.com',
-            password_hash=hash_password('password123'),
-            avatar='default_avatar.png'
-        )
-        db.session.add(landlord)
-        db.session.commit()
-        print("Added Landlord.")
+        # Seed Data (Check if Landlord exists to avoid duplicates)
+        if not User.query.filter_by(email='landlord@demo.com').first():
+            # 1 Bailleur (Landlord)
+            landlord = User(
+                role=UserRole.BAILLEUR,
+                email='landlord@demo.com',
+                password_hash=hash_password('password123'),
+                avatar='default_avatar.png'
+            )
+            db.session.add(landlord)
+            db.session.commit()
+            print("Added Landlord.")
 
-        # 1 Establishment
-        establishment = Establishment(
-            address='123 Demo Street, Paris',
-            fuzzy_location='Paris 1er Arrondissement (approx)',
-            config_financial_mode=FinancialMode.EGAL,
-            wifi_cost=29.99,
-            syndic_cost=50.0,
-            expense_types_config=["Loyer", "Eau", "Internet", "Ménage"]
-        )
-        db.session.add(establishment)
-        db.session.commit()
+            # 1 Establishment
+            establishment = Establishment(
+                address='123 Demo Street, Paris',
+                fuzzy_location='Paris 1er Arrondissement (approx)',
+                config_financial_mode=FinancialMode.EGAL,
+                wifi_cost=29.99,
+                syndic_cost=50.0,
+                expense_types_config=["Loyer", "Eau", "Internet", "Ménage"]
+            )
+            db.session.add(establishment)
+            db.session.commit()
 
-        # Add Landlord association
-        assoc = EstablishmentOwner(
-            user_id=landlord.id,
-            establishment_id=establishment.id,
-            role=EstablishmentOwnerRole.PRIMARY
-        )
-        db.session.add(assoc)
-        db.session.commit()
-        print("Added Establishment and Landlord association.")
+            # Add Landlord association
+            assoc = EstablishmentOwner(
+                user_id=landlord.id,
+                establishment_id=establishment.id,
+                role=EstablishmentOwnerRole.PRIMARY
+            )
+            db.session.add(assoc)
+            db.session.commit()
+            print("Added Establishment and Landlord association.")
 
-        # Chat Rooms
-        general_chat = ChatRoom(
-            establishment_id=establishment.id,
-            type=ChannelType.GENERAL,
-            name="General"
-        )
-        coloc_chat = ChatRoom(
-            establishment_id=establishment.id,
-            type=ChannelType.COLOC_ONLY,
-            name="Entre Colocs"
-        )
-        db.session.add_all([general_chat, coloc_chat])
-        db.session.commit()
-        print("Added Chat Rooms.")
+            # Chat Rooms
+            general_chat = ChatRoom(
+                establishment_id=establishment.id,
+                type=ChannelType.GENERAL,
+                name="General"
+            )
+            coloc_chat = ChatRoom(
+                establishment_id=establishment.id,
+                type=ChannelType.COLOC_ONLY,
+                name="Entre Colocs"
+            )
+            db.session.add_all([general_chat, coloc_chat])
+            db.session.commit()
+            print("Added Chat Rooms.")
 
-        # 3 Rooms
-        room1 = Room(establishment_id=establishment.id, name='Chambre 1', base_price=500.0, is_vacant=False)
-        room2 = Room(establishment_id=establishment.id, name='Chambre 2', base_price=450.0, is_vacant=False)
-        room3 = Room(establishment_id=establishment.id, name='Chambre 3', base_price=450.0, is_vacant=False)
+            # 3 Rooms
+            room1 = Room(establishment_id=establishment.id, name='Chambre 1', base_price=500.0, is_vacant=False)
+            room2 = Room(establishment_id=establishment.id, name='Chambre 2', base_price=450.0, is_vacant=False)
+            room3 = Room(establishment_id=establishment.id, name='Chambre 3', base_price=450.0, is_vacant=False)
 
-        db.session.add_all([room1, room2, room3])
-        db.session.commit()
-        print("Added Rooms.")
+            db.session.add_all([room1, room2, room3])
+            db.session.commit()
+            print("Added Rooms.")
 
-        # 1 Tenant Responsable
-        tenant_resp = User(
-            role=UserRole.TENANT_RESPONSABLE,
-            email='tenant_resp@demo.com',
-            password_hash=hash_password('password123'),
-            avatar='default_avatar.png'
-        )
-        db.session.add(tenant_resp)
-        db.session.commit() # Commit to get ID for Lease
+            # 1 Tenant Responsable
+            tenant_resp = User(
+                role=UserRole.TENANT_RESPONSABLE,
+                email='tenant_resp@demo.com',
+                password_hash=hash_password('password123'),
+                avatar='default_avatar.png'
+            )
+            db.session.add(tenant_resp)
+            db.session.commit() # Commit to get ID for Lease
 
-        # Lease for Tenant Resp (Room 1)
-        lease1 = Lease(
-            user_id=tenant_resp.id,
-            room_id=room1.id,
-            start_date=date(2023, 1, 1),
-            end_date=date(2024, 1, 1)
-        )
-        db.session.add(lease1)
+            # Lease for Tenant Resp (Room 1)
+            lease1 = Lease(
+                user_id=tenant_resp.id,
+                room_id=room1.id,
+                start_date=date(2023, 1, 1),
+                end_date=date(2024, 1, 1)
+            )
+            db.session.add(lease1)
 
-        # 2 Colocs
-        coloc1 = User(
-            role=UserRole.COLOCATAIRE,
-            email='coloc1@demo.com',
-            password_hash=hash_password('password123'),
-            avatar='default_avatar.png'
-        )
-        coloc2 = User(
-            role=UserRole.COLOCATAIRE,
-            email='coloc2@demo.com',
-            password_hash=hash_password('password123'),
-            avatar='default_avatar.png'
-        )
-        db.session.add_all([coloc1, coloc2])
-        db.session.commit() # Commit to get IDs
+            # 2 Colocs
+            coloc1 = User(
+                role=UserRole.COLOCATAIRE,
+                email='coloc1@demo.com',
+                password_hash=hash_password('password123'),
+                avatar='default_avatar.png'
+            )
+            coloc2 = User(
+                role=UserRole.COLOCATAIRE,
+                email='coloc2@demo.com',
+                password_hash=hash_password('password123'),
+                avatar='default_avatar.png'
+            )
+            db.session.add_all([coloc1, coloc2])
+            db.session.commit() # Commit to get IDs
 
-        # Leases for Colocs
-        lease2 = Lease(
-            user_id=coloc1.id,
-            room_id=room2.id,
-            start_date=date(2023, 2, 1),
-            end_date=date(2024, 2, 1)
-        )
-        lease3 = Lease(
-            user_id=coloc2.id,
-            room_id=room3.id,
-            start_date=date(2023, 3, 1),
-            end_date=date(2024, 3, 1)
-        )
-        db.session.add_all([lease2, lease3])
+            # Leases for Colocs
+            lease2 = Lease(
+                user_id=coloc1.id,
+                room_id=room2.id,
+                start_date=date(2023, 2, 1),
+                end_date=date(2024, 2, 1)
+            )
+            lease3 = Lease(
+                user_id=coloc2.id,
+                room_id=room3.id,
+                start_date=date(2023, 3, 1),
+                end_date=date(2024, 3, 1)
+            )
+            db.session.add_all([lease2, lease3])
 
-        db.session.commit()
+            db.session.commit()
 
-        print("Database initialized with demo data (1 Landlord, 1 Establishment, 3 Rooms, 1 Tenant Resp, 2 Colocs).")
+            print("Database initialized with demo data (1 Landlord, 1 Establishment, 3 Rooms, 1 Tenant Resp, 2 Colocs).")
+        else:
+            print("Demo data already exists, skipping seed.")
 
 if __name__ == '__main__':
     init_db()
