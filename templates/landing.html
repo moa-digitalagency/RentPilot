@@ -224,6 +224,27 @@
     </div>
 </section>
 
+<!-- MARKETPLACE SECTION -->
+<section id="marketplace" class="py-24 bg-indigo-900 text-white relative overflow-hidden scroll-mt-24">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <span class="inline-block py-1 px-3 rounded-full bg-indigo-800 text-indigo-200 text-xs font-bold tracking-wide uppercase mb-6 shadow-sm border border-indigo-700">
+            {{ _('marketplace.title') }}
+        </span>
+        <h2 class="text-3xl md:text-5xl font-bold mb-6">
+            {{ _('marketplace.subtitle') }}
+        </h2>
+        <p class="text-xl text-indigo-200 mb-10 max-w-2xl mx-auto">
+            {{ _('landing.feature_market_desc') }}
+        </p>
+
+        <a href="{{ url_for('marketplace.index') }}" class="inline-flex items-center px-8 py-4 text-lg font-bold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 shadow-lg shadow-indigo-900/50 transform hover:scale-105 transition-all duration-200">
+            {{ _('marketplace.title') }}
+            <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+        </a>
+    </div>
+</section>
+
 <!-- ROLES SECTION (Tabs) -->
 <section id="roles" class="py-24 bg-white scroll-mt-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

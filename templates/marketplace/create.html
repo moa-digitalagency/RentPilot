@@ -1,0 +1,118 @@
+<!--
+* Nom de l'application : RentPilot
+* Description : Marketplace Create Ad Template.
+* Produit de : MOA Digital Agency, www.myoneart.com
+* Fait par : Aisance KALONJI, www.aisancekalonji.com
+* Auditer par : La CyberConfiance, www.cyberconfiance.com
+-->
+{% extends "layout_public.html" %}
+
+{% block content %}
+<section class="py-24 bg-gray-50 min-h-screen pt-32">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ url_for('marketplace.index') }}" class="inline-flex items-center text-gray-500 hover:text-indigo-600 mb-8 font-medium">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            {{ _('marketplace.back_to_list') }}
+        </a>
+
+        <div class="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">{{ _('marketplace.form_title') }}</h1>
+            <p class="text-gray-500 mb-10">{{ _('marketplace.form_subtitle') }}</p>
+
+            <form action="{{ url_for('marketplace.create') }}" method="POST" class="space-y-8">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Room Selection -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_room') }}</label>
+                    <div class="relative">
+                        <select name="room_id" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition-colors">
+                            <option value="" disabled selected>Sélectionner un bien</option>
+                            {% for room in rooms %}
+                            <option value="{{ room.id }}">{{ room.name }} - {{ room.base_price }}€ ({{ room.establishment.address }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    {% if not rooms %}
+                    <p class="mt-2 text-sm text-red-500">Aucun bien disponible à la location pour votre compte.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Ad Details -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_title') }}</label>
+                        <input type="text" name="title" required placeholder="Ex: Chambre lumineuse proche métro" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_desc') }}</label>
+                        <textarea name="description" rows="4" placeholder="Décrivez le bien, l'ambiance, etc." class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">{{ _('marketplace.field_available') }}</label>
+                        <input type="date" name="available_from" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Contact Config -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">{{ _('marketplace.config_contact') }}</h3>
+                    <div class="space-y-6">
+                        <!-- WhatsApp -->
+                        <div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-colors" x-data="{ wa: false }">
+                            <div class="flex items-center h-5 mt-3">
+                                <input type="checkbox" name="enable_whatsapp" id="enable_whatsapp" x-model="wa" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                            </div>
+                            <div class="flex-1">
+                                <label for="enable_whatsapp" class="font-bold text-gray-800">{{ _('marketplace.enable_wa') }}</label>
+                                <div class="mt-2" x-show="wa" x-transition>
+                                    <input type="text" name="whatsapp_number" placeholder="{{ _('marketplace.wa_number') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors" x-data="{ phone: false }">
+                            <div class="flex items-center h-5 mt-3">
+                                <input type="checkbox" name="enable_phone" id="enable_phone" x-model="phone" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                            </div>
+                            <div class="flex-1">
+                                <label for="enable_phone" class="font-bold text-gray-800">{{ _('marketplace.enable_phone') }}</label>
+                                <div class="mt-2" x-show="phone" x-transition>
+                                    <input type="text" name="phone_number" placeholder="{{ _('marketplace.phone_number') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Email -->
+                         <div class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 transition-colors" x-data="{ email: false }">
+                            <div class="flex items-center h-5 mt-3">
+                                <input type="checkbox" name="enable_email" id="enable_email" x-model="email" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                            </div>
+                            <div class="flex-1">
+                                <label for="enable_email" class="font-bold text-gray-800">{{ _('marketplace.enable_email') }}</label>
+                                <div class="mt-2" x-show="email" x-transition>
+                                    <input type="email" name="contact_email" placeholder="{{ _('marketplace.email_address') }}" class="w-full px-4 py-2 rounded-lg border border-gray-300 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-300 hover:bg-indigo-700 hover:scale-[1.02] transition-all duration-200">
+                        {{ _('marketplace.submit') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
