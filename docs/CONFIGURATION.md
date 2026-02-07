@@ -5,7 +5,7 @@ Ce document détaille l'ensemble des variables d'environnement nécessaires au b
 ## 1. Prérequis Système
 
 *   **Python**: Version 3.8 ou supérieure.
-*   **Base de Données**: SQLite (par défaut pour le développement) ou PostgreSQL (recommandé pour la production).
+*   **Base de Données**: PostgreSQL (Requis).
 *   **Serveur Web**: Un serveur compatible WSGI (ex: Gunicorn) derrière un reverse proxy (ex: Nginx).
 
 ## 2. Installation des Dépendances
@@ -26,7 +26,7 @@ Le fichier `config/settings.py` centralise la configuration de l'application. Vo
 | :--- | :--- | :--- | :--- |
 | `FLASK_ENV` | Environnement d'exécution (`development` ou `production`). | `development` | Oui |
 | `SECRET_KEY` | Clé secrète pour signer les sessions et sécuriser les formulaires CSRF. | `dev_secret_key...` | **Oui** (Critique) |
-| `DB_URI` | Chaîne de connexion à la base de données (SQLAlchemy). | `sqlite:///rentpilot.db` | Oui |
+| `DB_URI` | Chaîne de connexion à la base de données (SQLAlchemy). | `postgresql://rentpilot:rentpilot@localhost:5432/rentpilot` | Oui |
 | `UPLOAD_FOLDER` | Chemin absolu ou relatif pour le stockage des fichiers généraux (preuves, factures). | `statics/uploads` | Non |
 | `UPLOAD_FOLDER_CHAT` | Chemin pour le stockage des médias du chat. | `statics/uploads/chat` | Non |
 | `SUPER_ADMIN_ID` | Email de l'administrateur principal (Super Admin). | `admin@rentpilot.com` | Recommandé |
