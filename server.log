@@ -1,0 +1,21 @@
+ * Serving Flask app 'config.init_app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.2:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 410-907-091
+127.0.0.1 - - [07/Feb/2026 10:13:23] "GET / HTTP/1.1" 200 -
+ * Detected change in '/app/verify_landing.py', reloading
+Error fetching branding settings: (sqlite3.OperationalError) no such table: platform_settings
+[SQL: SELECT platform_settings.id AS platform_settings_id, platform_settings.app_name AS platform_settings_app_name, platform_settings.logo_url AS platform_settings_logo_url, platform_settings.primary_color_hex AS platform_settings_primary_color_hex, platform_settings.secondary_color_hex AS platform_settings_secondary_color_hex, platform_settings.timezone AS platform_settings_timezone, platform_settings.seo_title_template AS platform_settings_seo_title_template, platform_settings.seo_meta_desc AS platform_settings_seo_meta_desc, platform_settings.is_maintenance_mode AS platform_settings_is_maintenance_mode, platform_settings.whatsapp_contact_number AS platform_settings_whatsapp_contact_number, platform_settings.receipt_format AS platform_settings_receipt_format, platform_settings.receipt_custom_css AS platform_settings_receipt_custom_css
+FROM platform_settings
+ LIMIT ? OFFSET ?]
+[parameters: (1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 410-907-091
