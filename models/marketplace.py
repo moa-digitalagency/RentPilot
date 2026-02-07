@@ -11,17 +11,32 @@ from datetime import datetime
 
 class Ad(db.Model):
     """
-    Annonce pour une chambre vide.
+    Annonce pour une chambre vide ou colocation.
     """
     __tablename__ = 'ads'
 
     id = db.Column(db.Integer, primary_key=True)
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
+
+    # Basic Ad Details
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     available_from = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+
+    # Contact Configuration
+    enable_whatsapp = db.Column(db.Boolean, default=False)
+    whatsapp_number = db.Column(db.String(20), nullable=True) # For wa.me link
+
+    enable_phone = db.Column(db.Boolean, default=False)
+    phone_number = db.Column(db.String(20), nullable=True) # For tel: link
+
+    enable_email = db.Column(db.Boolean, default=False)
+    contact_email = db.Column(db.String(120), nullable=True) # For mailto: link
+
+    # Relationships
+    room = db.relationship('Room', backref='ads', lazy=True)
 
 class Request(db.Model):
     """
