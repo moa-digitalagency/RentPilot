@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,10 +94,16 @@
             </div>
 
             <!-- Language Switcher -->
-            <div class="px-4 py-2 flex items-center space-x-2 border-b border-white/20 justify-center">
-                <a href="{{ url_for('main.set_lang', lang='fr') }}" class="text-xs font-semibold {{ 'text-indigo-600 bg-white/50 rounded px-2 py-1' if get_locale() == 'fr' else 'text-gray-500 hover:text-gray-700 px-2 py-1' }}">FR</a>
-                <span class="text-gray-300">|</span>
-                <a href="{{ url_for('main.set_lang', lang='en') }}" class="text-xs font-semibold {{ 'text-indigo-600 bg-white/50 rounded px-2 py-1' if get_locale() == 'en' else 'text-gray-500 hover:text-gray-700 px-2 py-1' }}">EN</a>
+            <div class="px-4 py-2 flex items-center justify-center space-x-1 border-b border-white/20">
+                {% for lang_code in supported_languages %}
+                    <a href="{{ url_for('main.set_lang', lang=lang_code) }}"
+                       class="text-xs font-semibold px-2 py-1 rounded transition-colors {{ 'text-indigo-600 bg-white/50' if get_locale() == lang_code else 'text-gray-500 hover:text-gray-700 hover:bg-white/30' }}">
+                        {{ lang_code|upper }}
+                    </a>
+                    {% if not loop.last %}
+                        <span class="text-gray-300">|</span>
+                    {% endif %}
+                {% endfor %}
             </div>
 
             <!-- Navigation -->
@@ -182,6 +188,7 @@
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
